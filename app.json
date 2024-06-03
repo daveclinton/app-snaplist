@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "snaplist",
+    "slug": "snaplist-2",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2A2661"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.daveclinton.snaplist"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.daveclinton.snaplist"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "9bf39d6a-38c3-48e6-b5f1-8b98b787e50d"
+      }
+    }
+  }
+}
