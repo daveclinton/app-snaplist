@@ -289,7 +289,7 @@ export function ControlledOTPInput<T extends FieldValues>(
       {Array.from({ length: 6 }, (_, index) => (
         <View
           key={index}
-          className="mx-1 h-[42px] w-[42px] mr-2 items-center justify-center rounded-full border border-[#2A2661]"
+          className="mx-1 h-12 w-12 mr-2 items-center justify-center rounded-full border border-[#2A2661]"
         >
           <TextInput
             className="text-center text-xl"
