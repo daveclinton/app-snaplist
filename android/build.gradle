@@ -20,6 +20,9 @@ buildscript {
         classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
     }
 }
+android {
+    ndkVersion "21.4.7075529" 
+}
 
 apply plugin: "com.facebook.react.rootproject"
 
