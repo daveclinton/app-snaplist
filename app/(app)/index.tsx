@@ -15,7 +15,7 @@ import {
 import { CameraSvg } from "@/ui/icons/camera";
 import { MenuIcon } from "@/ui/icons/menu";
 import { SearchIcon } from "@/ui/icons/search";
-import { usePosts } from "@/api/use-posts";
+import { useInventory } from "@/api/market-places.tsx/use-inventory";
 
 const Maercari = require("../../assets/mercari.svg");
 const Facebook = require("../../assets/facebook.svg");
@@ -23,7 +23,7 @@ const Ebay = require("../../assets/ebay.svg");
 const EmptyState = require("../../assets/emptyState.svg");
 
 export default function Feed() {
-  const { data, isLoading, isError } = usePosts();
+  const { data, isLoading, isError } = useInventory();
   const renderItem = React.useCallback(
     ({ item }: { item: any }) => <Card {...item} />,
     []

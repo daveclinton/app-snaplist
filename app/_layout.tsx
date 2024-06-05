@@ -37,6 +37,7 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="connect-market" options={{ headerShown: false }} />
         <Stack.Screen name="create-account" options={{ headerShown: false }} />
         <Stack.Screen
           name="otp-verification"
