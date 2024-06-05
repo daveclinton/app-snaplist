@@ -8,7 +8,7 @@ buildscript {
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
         kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.23'
 
-        ndkVersion = "26.1.10909125"
+        ndkVersion = "21.4.7075529"
     }
     repositories {
         google()
@@ -20,9 +20,7 @@ buildscript {
         classpath('org.jetbrains.kotlin:kotlin-gradle-plugin')
     }
 }
-android {
-    ndkVersion "21.4.7075529" 
-}
+
 
 apply plugin: "com.facebook.react.rootproject"
 
