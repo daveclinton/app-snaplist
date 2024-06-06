@@ -1,15 +1,15 @@
 /* eslint-disable max-lines-per-function */
-import * as React from 'react';
+import * as React from "react";
 
-import { MyBarChart } from '@/components/bar-chart';
-import DonutChart from '@/components/donut-chart';
+import { MyBarChart } from "@/components/bar-chart";
+import DonutChart from "@/components/donut-chart";
 import {
   FocusAwareStatusBar,
   SafeAreaView,
   ScrollView,
   Text,
   View,
-} from '@/ui';
+} from "@/ui";
 
 const MarketCircle = ({ color }: { color: string }) => {
   return <View className={`bg-[${color}] h-4 w-4 rounded-full`} />;
@@ -21,7 +21,7 @@ export default function Metrics() {
       <FocusAwareStatusBar />
       <ScrollView className="px-4">
         <SafeAreaView className="flex-1">
-          <View className="mt-4 w-full gap-y-5 rounded-lg bg-[#FAFAFA] px-2 py-4">
+          <View className="w-full gap-y-5 rounded-lg bg-[#FAFAFA] px-2">
             <Text className="text-lg font-bold">Earned Total</Text>
             <View className="flex flex-row items-center justify-between">
               <MyBarChart />

@@ -16,6 +16,7 @@ import { CameraSvg } from "@/ui/icons/camera";
 import { MenuIcon } from "@/ui/icons/menu";
 import { SearchIcon } from "@/ui/icons/search";
 import { useInventory } from "@/api/market-places.tsx/use-inventory";
+import { useRouter } from "expo-router";
 
 const Maercari = require("../../assets/mercari.svg");
 const Facebook = require("../../assets/facebook.svg");
@@ -24,6 +25,7 @@ const EmptyState = require("../../assets/emptyState.svg");
 
 export default function Feed() {
   const { data, isLoading, isError } = useInventory();
+  const router = useRouter();
   const renderItem = React.useCallback(
     ({ item }: { item: any }) => <Card {...item} />,
     []
@@ -40,7 +42,17 @@ export default function Feed() {
               className=" h-full w-full overflow-hidden"
             />
           </View>
-          <Text> Error Loading data </Text>
+          <Text> No Products Added </Text>
+        </View>
+        <View className="absolute bottom-10 right-5">
+          <TouchableOpacity
+            className="bg-[#2A2661] px-4 py-3 rounded-lg"
+            onPress={() => {
+              router.push("/list-item");
+            }}
+          >
+            <Text className="text-white font-bold">Add New Product</Text>
+          </TouchableOpacity>
         </View>
       </>
     );

@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
-import React from 'react';
-import { TextInput } from 'react-native';
+import React from "react";
+import { TextInput } from "react-native";
 
 import {
   FocusAwareStatusBar,
@@ -8,16 +8,16 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from '@/ui';
-import { CaretDown } from '@/ui/icons';
-import { SearchIcon } from '@/ui/icons/search';
+} from "@/ui";
+import { CaretDown } from "@/ui/icons";
+import { SearchIcon } from "@/ui/icons/search";
 
 export default function Help() {
   return (
     <>
       <FocusAwareStatusBar />
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1  p-6">
-        <View className="flex flex-row items-center rounded-xl border-[0.5px]  border-neutral-300 bg-[#FAFAFA] px-2.5 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white">
+        <View className="flex flex-row items-center rounded-xl border-[0.5px]  border-neutral-300 bg-[#FAFAFA] px-2.5">
           <TouchableOpacity className="mr-2">
             <SearchIcon />
           </TouchableOpacity>

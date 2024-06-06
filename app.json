@@ -30,14 +30,20 @@
     },
     "plugins": [
       "expo-router",
-         [
-      "react-native-vision-camera",
-      {
-        "cameraPermissionText": "Snaplist needs access to your Camera.",
-        "enableMicrophonePermission": true,
-        "microphonePermissionText": "Snaplist needs access to your Microphone."
-      }
-    ]
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Snaplist to access your camera",
+          "microphonePermission": "Allow Snaplist to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
