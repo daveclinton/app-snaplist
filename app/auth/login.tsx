@@ -17,7 +17,6 @@ const Login = () => {
       password,
     });
     if (error) Alert.alert(error.message);
-    router.replace('/');
   }
 
   return (
