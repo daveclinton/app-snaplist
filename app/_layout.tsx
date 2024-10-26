@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { ErrorScreen } from '~/components/ErrorBoundary';
 import { LoadingScreen } from '~/components/LoadingScreen';
+import { ProtectedRoute } from '~/components/ProtectedRoute';
 import { SessionContext } from '~/context/SessionContext';
 import { storage } from '~/utils/storage';
 import { supabase } from '~/utils/supabase';
@@ -18,10 +19,15 @@ export default function RootLayout() {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [isReady, setIsReady] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    setupAuthSubscription();
+    const initialize = async () => {
+      await setupAuthSubscription();
+      setIsReady(true);
+    };
+    initialize();
   }, []);
 
   const setupAuthSubscription = async () => {
@@ -29,7 +35,6 @@ export default function RootLayout() {
       const persistedSession = await storage.getItem<Session>('session');
       if (persistedSession) {
         setSession(persistedSession);
-        router.replace('/(drawer)');
       }
 
       const {
@@ -42,7 +47,7 @@ export default function RootLayout() {
       if (currentSession) {
         setSession(currentSession);
         await storage.setItem('session', currentSession);
-        router.replace('/(drawer)');
+        if (isReady) router.replace('/(drawer)');
       }
 
       const {
@@ -51,10 +56,10 @@ export default function RootLayout() {
         setSession(newSession);
         if (newSession) {
           await storage.setItem('session', newSession);
-          router.replace('/(drawer)');
+          if (isReady) router.replace('/(drawer)');
         } else {
           await storage.removeItem('session');
-          router.replace('/auth/login');
+          if (isReady) router.replace('/auth/login');
         }
       });
 
@@ -75,7 +80,11 @@ export default function RootLayout() {
       await supabase.auth.signOut();
       await storage.removeItem('session');
       setSession(null);
-      router.replace('/auth/login');
+      if (isReady) {
+        setTimeout(() => {
+          router.replace('/auth/login');
+        }, 100);
+      }
     } catch (err) {
       setError(err instanceof Error ? err : new Error('Failed to sign out'));
     } finally {
@@ -116,21 +125,23 @@ export default function RootLayout() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || !isReady) {
     return <LoadingScreen />;
   }
 
   return (
     <SessionContext.Provider value={{ session, signOut, refreshSession, isLoading }}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        {session ? (
-          <Slot />
-        ) : (
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="auth/login" />
-            <Stack.Screen name="auth/signup" />
-          </Stack>
-        )}
+        <ProtectedRoute>
+          {session ? (
+            <Slot />
+          ) : (
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="auth/login" />
+              <Stack.Screen name="auth/signup" />
+            </Stack>
+          )}
+        </ProtectedRoute>
       </GestureHandlerRootView>
     </SessionContext.Provider>
   );
