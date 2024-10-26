@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Lock, Mail, Eye, EyeOff, Github } from 'lucide-react-native';
+import { Lock, Mail, Eye, EyeOff } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { View, TextInput, Text, Alert, Pressable } from 'react-native';
 import { z } from 'zod';
