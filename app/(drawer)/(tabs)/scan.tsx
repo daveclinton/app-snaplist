@@ -3,12 +3,12 @@ import { Stack } from 'expo-router';
 import { Container } from '~/components/Container';
 import { ScreenContent } from '~/components/ScreenContent';
 
-export default function Home() {
+export default function Scan() {
   return (
     <>
-      <Stack.Screen options={{ title: 'Tab One' }} />
+      <Stack.Screen options={{ title: 'Scan' }} />
       <Container>
-        <ScreenContent path="app/(drawer)/(tabs)/index.tsx" title="Tab One" />
+        <ScreenContent path="app/(drawer)/(tabs)/home.tsx" title="Scan" />
       </Container>
     </>
   );

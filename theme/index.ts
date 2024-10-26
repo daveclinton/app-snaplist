@@ -1,4 +1,3 @@
-// app/theme/index.ts
 const colors = {
   primary: {
     DEFAULT: '#007AFF',
