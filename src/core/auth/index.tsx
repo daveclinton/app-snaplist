@@ -1,8 +1,8 @@
 /* eslint-disable max-lines-per-function */
-import { Env } from '@env';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { type SupabaseClient } from '@supabase/supabase-js';
 import { create } from 'zustand';
 
+import { supabase } from '../supabase';
 import { createSelectors } from '../utils';
 import { getToken, removeToken, setToken } from './utils';
 
@@ -27,14 +27,6 @@ interface AuthState {
 }
 
 // Ensure environment variables are properly typed and available
-if (!Env.NEXT_PUBLIC_SUPABASE_URL || !Env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  throw new Error('Missing required Supabase environment variables');
-}
-
-const supabase = createClient(
-  Env.NEXT_PUBLIC_SUPABASE_URL,
-  Env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-);
 
 const _useAuth = create<AuthState>((set, get) => ({
   supabase,
