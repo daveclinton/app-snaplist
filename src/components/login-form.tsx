@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import * as z from 'zod';
 
+import { supabase } from '@/core/supabase';
 import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
 
 const schema = z.object({
@@ -32,9 +33,31 @@ export const LoginForm = ({
   onSubmit = () => {},
   isLoading = false,
 }: LoginFormProps) => {
-  const { handleSubmit, control } = useForm<FormType>({
+  const { handleSubmit, control, getValues } = useForm<FormType>({
     resolver: zodResolver(schema),
   });
+
+  const [resetMessage, setResetMessage] = useState<string | null>(null);
+
+  const resetPassword = async () => {
+    const { email } = getValues();
+    if (!email) {
+      setResetMessage(
+        'Please enter your email address to reset your password.',
+      );
+      return;
+    }
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) {
+        setResetMessage(`Error: ${error.message}`);
+      } else {
+        setResetMessage('Password reset email sent successfully!');
+      }
+    } catch (error) {
+      setResetMessage('An unexpected error occurred. Please try again.');
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -43,7 +66,10 @@ export const LoginForm = ({
       keyboardVerticalOffset={10}
     >
       <View className="flex-1 justify-center p-4">
-        <Text testID="form-title" className="pb-6 text-center text-2xl">
+        <Text
+          testID="form-title"
+          className="pb-6 text-center text-2xl font-bold"
+        >
           Sign In
         </Text>
 
@@ -70,6 +96,16 @@ export const LoginForm = ({
           disabled={isLoading}
           loading={isLoading}
         />
+        <Pressable onPress={resetPassword}>
+          <Text className="text-center text-sm text-blue-600">
+            Forgot your password?
+          </Text>
+        </Pressable>
+        {resetMessage && (
+          <Text className="mt-4 text-center text-sm text-gray-600">
+            {resetMessage}
+          </Text>
+        )}
 
         <View className="mt-4 flex-row justify-center">
           <Text className="text-gray-600">Don't have an account? </Text>

@@ -14,14 +14,14 @@ const button = tv({
   variants: {
     variant: {
       default: {
+        container: 'bg-primary-600',
+        label: 'text-white',
+        indicator: 'text-white',
+      },
+      secondary: {
         container: 'bg-black dark:bg-white',
         label: 'text-white dark:text-black',
         indicator: 'text-white dark:text-black',
-      },
-      secondary: {
-        container: 'bg-primary-600',
-        label: 'text-secondary-600',
-        indicator: 'text-white',
       },
       outline: {
         container: 'border border-neutral-400',
@@ -58,7 +58,7 @@ const button = tv({
         label: 'text-sm',
         indicator: 'h-2',
       },
-      icon: { container: 'h-9 w-9' },
+      icon: { container: 'size-9' },
     },
     disabled: {
       true: {
@@ -105,11 +105,11 @@ export const Button = React.forwardRef<View, Props>(
       textClassName = '',
       ...props
     },
-    ref
+    ref,
   ) => {
     const styles = React.useMemo(
       () => button({ variant, disabled, size }),
-      [variant, disabled, size]
+      [variant, disabled, size],
     );
 
     return (
@@ -142,5 +142,5 @@ export const Button = React.forwardRef<View, Props>(
         )}
       </Pressable>
     );
-  }
+  },
 );

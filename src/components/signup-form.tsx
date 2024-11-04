@@ -99,7 +99,7 @@ export const SignupForm = ({
             <Text className="text-gray-600">Already have an account?</Text>
             <Link href="/login" asChild>
               <Pressable>
-                <Text className="font-semibold text-blue-500">Sign In</Text>
+                <Text className="font-semibold text-primary-600">Sign In</Text>
               </Pressable>
             </Link>
           </View>
