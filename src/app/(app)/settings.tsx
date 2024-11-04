@@ -1,18 +1,30 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable react/react-in-jsx-scope */
 import { Env } from '@env';
 import { useColorScheme } from 'nativewind';
+import React from 'react';
 
 import { Item } from '@/components/settings/item';
 import { ItemsContainer } from '@/components/settings/items-container';
 import { LanguageItem } from '@/components/settings/language-item';
 import { ThemeItem } from '@/components/settings/theme-item';
-import { translate, useAuth } from '@/core';
+import { signOut, translate } from '@/core';
 import { colors, FocusAwareStatusBar, ScrollView, Text, View } from '@/ui';
 import { Github, Rate, Share, Support, Website } from '@/ui/icons';
 
 export default function Settings() {
-  const signOut = useAuth.use.signOut();
   const { colorScheme } = useColorScheme();
+  const [, setLoading] = React.useState(false);
+  const handleSignOut = async () => {
+    try {
+      setLoading(true);
+      await signOut();
+    } catch (error) {
+      console.error('Failed to sign out:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const iconColor =
     colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
   return (
@@ -69,7 +81,7 @@ export default function Settings() {
 
           <View className="my-8">
             <ItemsContainer>
-              <Item text="settings.logout" onPress={signOut} />
+              <Item text="settings.logout" onPress={handleSignOut} />
             </ItemsContainer>
           </View>
         </View>

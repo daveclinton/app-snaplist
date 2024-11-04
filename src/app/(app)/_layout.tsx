@@ -24,10 +24,14 @@ export default function TabLayout() {
     }
   }, [hideSplash, status]);
 
+  console.log('IsFirstTime', isFirstTime);
+
+  console.log('Status', status);
+
   if (isFirstTime) {
     return <Redirect href="/onboarding" />;
   }
-  if (status === 'signOut') {
+  if (status === 'unauthenticated') {
     return <Redirect href="/login" />;
   }
   return (

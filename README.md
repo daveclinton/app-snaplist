@@ -6,6 +6,8 @@ Mobile App </h1>
 
 ## Requirements
 
+https://shipmobilefast.com/asset-generator
+
 - [React Native dev environment ](https://reactnative.dev/docs/environment-setup)
 - [Node.js LTS release](https://nodejs.org/en/)
 - [Git](https://git-scm.com/)

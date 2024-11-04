@@ -1,24 +1,39 @@
-import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
+import { Alert } from 'react-native';
 
 import type { LoginFormProps } from '@/components/login-form';
 import { LoginForm } from '@/components/login-form';
-import { useAuth } from '@/core';
+import { signInWithEmail } from '@/core';
 import { FocusAwareStatusBar } from '@/ui';
 
-export default function Login() {
-  const router = useRouter();
-  const signIn = useAuth.use.signIn();
+interface LoginData {
+  email: string;
+  password: string;
+}
 
-  const onSubmit: LoginFormProps['onSubmit'] = (data) => {
-    console.log(data);
-    signIn({ access: 'access-token', refresh: 'refresh-token' });
-    router.push('/');
+export default function Login() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit: LoginFormProps['onSubmit'] = async (data: LoginData) => {
+    try {
+      setIsLoading(true);
+      await signInWithEmail(data.email, data.password);
+    } catch (error) {
+      // Handle specific error cases
+      if (error instanceof Error) {
+        Alert.alert('Sign In Failed', error.message);
+      } else {
+        Alert.alert('Sign In Failed', 'An unexpected error occurred');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
+
   return (
     <>
       <FocusAwareStatusBar />
-      <LoginForm onSubmit={onSubmit} />
+      <LoginForm onSubmit={onSubmit} isLoading={isLoading} />
     </>
   );
 }

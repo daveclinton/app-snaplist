@@ -1,14 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Link } from 'expo-router';
 import React from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import * as z from 'zod';
 
-import { Button, ControlledInput, Text, View } from '@/ui';
+import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
 
 const schema = z.object({
-  name: z.string().optional(),
   email: z
     .string({
       required_error: 'Email is required',
@@ -25,12 +25,17 @@ export type FormType = z.infer<typeof schema>;
 
 export type LoginFormProps = {
   onSubmit?: SubmitHandler<FormType>;
+  isLoading?: boolean;
 };
 
-export const LoginForm = ({ onSubmit = () => {} }: LoginFormProps) => {
+export const LoginForm = ({
+  onSubmit = () => {},
+  isLoading = false,
+}: LoginFormProps) => {
   const { handleSubmit, control } = useForm<FormType>({
     resolver: zodResolver(schema),
   });
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -43,17 +48,11 @@ export const LoginForm = ({ onSubmit = () => {} }: LoginFormProps) => {
         </Text>
 
         <ControlledInput
-          testID="name"
-          control={control}
-          name="name"
-          label="Name"
-        />
-
-        <ControlledInput
           testID="email-input"
           control={control}
           name="email"
           label="Email"
+          editable={!isLoading}
         />
         <ControlledInput
           testID="password-input"
@@ -62,12 +61,24 @@ export const LoginForm = ({ onSubmit = () => {} }: LoginFormProps) => {
           label="Password"
           placeholder="***"
           secureTextEntry={true}
+          editable={!isLoading}
         />
         <Button
           testID="login-button"
-          label="Login"
+          label={isLoading ? 'Signing in...' : 'Login'}
           onPress={handleSubmit(onSubmit)}
+          disabled={isLoading}
+          loading={isLoading}
         />
+
+        <View className="mt-4 flex-row justify-center">
+          <Text className="text-gray-600">Don't have an account? </Text>
+          <Link href="/signup" asChild>
+            <Pressable>
+              <Text className="font-semibold text-primary-600">Create one</Text>
+            </Pressable>
+          </Link>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );
