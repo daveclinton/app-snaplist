@@ -27,11 +27,13 @@ export type FormType = z.infer<typeof schema>;
 export type LoginFormProps = {
   onSubmit?: SubmitHandler<FormType>;
   isLoading?: boolean;
+  error?: string | null;
 };
 
 export const LoginForm = ({
   onSubmit = () => {},
   isLoading = false,
+  error = null,
 }: LoginFormProps) => {
   const { handleSubmit, control, getValues } = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -68,10 +70,18 @@ export const LoginForm = ({
       <View className="flex-1 justify-center p-4">
         <Text
           testID="form-title"
-          className="pb-6 text-center text-2xl font-bold"
+          className="pb-6 text-center text-2xl font-bold text-primary-600"
         >
           Sign In
         </Text>
+        {error && (
+          <Text
+            className="mb-4 text-center text-red-500"
+            testID="error-message"
+          >
+            {error}
+          </Text>
+        )}
 
         <ControlledInput
           testID="email-input"
@@ -97,7 +107,7 @@ export const LoginForm = ({
           loading={isLoading}
         />
         <Pressable onPress={resetPassword}>
-          <Text className="text-center text-sm text-blue-600">
+          <Text className="text-center text-sm text-primary-600">
             Forgot your password?
           </Text>
         </Pressable>

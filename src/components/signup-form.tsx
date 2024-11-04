@@ -48,7 +48,7 @@ export const SignupForm = ({
       <View className="flex-1 justify-center p-4">
         <Text
           testID="form-title"
-          className="pb-6 text-center text-2xl font-bold"
+          className="pb-6 text-center text-2xl font-bold text-primary-600"
         >
           Create Account
         </Text>
