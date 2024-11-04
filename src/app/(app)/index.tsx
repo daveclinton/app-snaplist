@@ -4,7 +4,7 @@ import { Link, router } from 'expo-router';
 import {
   Camera,
   ChevronRight,
-  Facebook,
+  HamIcon,
   HelpCircle,
   Plus,
   ShoppingCart,
@@ -28,9 +28,22 @@ const userData = {
   name: 'John',
   notifications: 3,
   linkedAccounts: [
-    { id: 1, name: 'Facebook', icon: Facebook, isLinked: true },
-    { id: 2, name: 'eBay', icon: Store, isLinked: true },
-    { id: 3, name: 'Amazon', icon: ShoppingCart, isLinked: false },
+    {
+      id: 1,
+      name: 'Facebook',
+      icon: HamIcon,
+      isLinked: true,
+      isSupported: true,
+    },
+    { id: 2, name: 'eBay', icon: Store, isLinked: false, isSupported: true },
+    {
+      id: 3,
+      name: 'Amazon',
+      icon: ShoppingCart,
+      isLinked: false,
+      isSupported: true,
+    },
+    { id: 4, name: 'Etsy', icon: Store, isLinked: false, isSupported: false },
   ],
   recentScans: [
     {
