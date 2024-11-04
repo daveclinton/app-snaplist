@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert } from 'react-native';
 
@@ -18,6 +19,7 @@ export default function Login() {
     try {
       setIsLoading(true);
       await signInWithEmail(data.email, data.password);
+      router.replace('/(app)/');
     } catch (error) {
       // Handle specific error cases
       if (error instanceof Error) {

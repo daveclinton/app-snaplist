@@ -44,6 +44,8 @@ const _useAuth = create<AuthState>((set, get) => ({
         password,
       });
 
+      console.log('Listen here', data);
+
       if (error) throw error;
       if (!data.session) throw new Error('No session data received');
 
@@ -143,7 +145,6 @@ const _useAuth = create<AuthState>((set, get) => ({
 
   hydrate: async () => {
     try {
-      // Cleanup existing listener if it exists
       const { cleanup } = get();
       if (cleanup) {
         cleanup();
@@ -151,6 +152,8 @@ const _useAuth = create<AuthState>((set, get) => ({
 
       set({ status: 'loading' });
       const storedToken = await getToken();
+
+      console.log('Is it available', storedToken);
 
       if (!storedToken) {
         set({
@@ -161,23 +164,25 @@ const _useAuth = create<AuthState>((set, get) => ({
         return;
       }
 
-      const {
-        data: { session },
-        error,
-      } = await supabase.auth.getSession();
+      // Map storedToken to match expected parameter shape
+      const sessionToken = {
+        access_token: storedToken.access,
+        refresh_token: storedToken.refresh,
+      };
 
-      if (error || !session) {
+      const { data, error } = await supabase.auth.setSession(sessionToken);
+
+      if (error || !data.session) {
         throw new Error('Invalid session');
       }
 
       const newToken: TokenType = {
-        access: session.access_token,
-        refresh: session.refresh_token,
+        access: data.session.access_token,
+        refresh: data.session.refresh_token,
       };
 
       await setToken(newToken);
 
-      // Set up auth state listener
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -217,7 +222,6 @@ const _useAuth = create<AuthState>((set, get) => ({
         }
       });
 
-      // Store the cleanup function in state
       set({
         token: newToken,
         status: 'authenticated',
