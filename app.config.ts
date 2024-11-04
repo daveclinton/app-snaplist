@@ -65,6 +65,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         fonts: ['./assets/fonts/Inter.ttf'],
       },
     ],
+    [
+      'expo-camera',
+      {
+        cameraPermission: 'Allow $(PRODUCT_NAME) to access your camera',
+      },
+    ],
+    [
+      'expo-media-library',
+      {
+        photosPermission: 'Allow $(PRODUCT_NAME) to access your photos.',
+        savePhotosPermission: 'Allow $(PRODUCT_NAME) to save photos.',
+        isAccessMediaLocationEnabled: true,
+      },
+    ],
     'expo-localization',
     'expo-router',
     ['app-icon-badge', appIconBadgeConfig],

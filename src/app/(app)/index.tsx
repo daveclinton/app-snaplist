@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import {
   Camera,
   ChevronRight,
@@ -12,7 +12,15 @@ import {
 import { MotiScrollView } from 'moti';
 import React from 'react';
 
-import { FocusAwareStatusBar, Text, TouchableOpacity, View } from '@/ui';
+import PermissionsScreen from '@/components/onbad';
+import {
+  FocusAwareStatusBar,
+  Modal,
+  Text,
+  TouchableOpacity,
+  useModal,
+  View,
+} from '@/ui';
 
 const userData = {
   name: 'John',
@@ -44,10 +52,20 @@ const userData = {
 
 export default function Feed() {
   const isNewUser = true;
+  const { ref, present, dismiss } = useModal();
+
+  const showModal = () => {
+    present({ title: 'My Modal' });
+  };
+
+  const handleContinue = () => {
+    dismiss();
+    router.replace('/(app)/style');
+  };
 
   return (
     <View className="flex-1 bg-white px-4 dark:bg-gray-900">
-      <MotiScrollView className="px-5" showsVerticalScrollIndicator={false}>
+      <MotiScrollView className="px-3" showsVerticalScrollIndicator={false}>
         <FocusAwareStatusBar />
         <Header name={userData.name} />
         {/* Linked Accounts Bar */}
@@ -56,11 +74,14 @@ export default function Feed() {
         {isNewUser && <NewUserGuide />}
 
         {/* Scan Button */}
-        <ScanButton />
+        <ScanButton onPress={showModal} />
 
         {/* Recent Scans */}
         <RecentScansSection scans={userData.recentScans} />
       </MotiScrollView>
+      <Modal snapPoints={['80%']} ref={ref}>
+        <PermissionsScreen handleContinue={handleContinue} />
+      </Modal>
     </View>
   );
 }
@@ -207,11 +228,12 @@ const RecentScansSection = ({
   </View>
 );
 
-const ScanButton = () => (
+const ScanButton = ({ onPress }: { onPress: () => void }) => (
   <View className="mb-8 items-center">
     <TouchableOpacity
       className="mb-2 size-16 items-center justify-center rounded-full bg-cyan-500 shadow-lg dark:bg-cyan-600"
       activeOpacity={0.7}
+      onPress={onPress}
     >
       <Camera size={32} color="white" />
     </TouchableOpacity>
