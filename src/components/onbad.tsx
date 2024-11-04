@@ -1,7 +1,7 @@
-import { Camera as ExpoCamera } from 'expo-camera';
+import { useCameraPermissions } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { Camera } from 'lucide-react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 const PermissionsScreen = ({
@@ -9,17 +9,16 @@ const PermissionsScreen = ({
 }: {
   handleContinue: () => void;
 }) => {
-  const [cameraPermission, setCameraPermission] = useState(false);
-  const [mediaPermission, setMediaPermission] = useState(false);
+  const [status, requestPermission] = useCameraPermissions();
+  const [permissionResponse, mediaLibraryRequestPermission] =
+    MediaLibrary.usePermissions();
 
   const requestCameraPermission = async () => {
-    const { status } = await ExpoCamera.requestCameraPermissionsAsync();
-    setCameraPermission(status === 'granted');
+    await requestPermission();
   };
 
   const requestMediaPermission = async () => {
-    const { status } = await MediaLibrary.requestPermissionsAsync();
-    setMediaPermission(status === 'granted');
+    await mediaLibraryRequestPermission();
   };
 
   return (
@@ -48,11 +47,11 @@ const PermissionsScreen = ({
             <Pressable
               onPress={requestCameraPermission}
               className={`w-full items-center rounded-lg py-3 ${
-                cameraPermission ? 'bg-green-500' : 'bg-cyan-500'
+                status?.granted ? 'bg-green-500' : 'bg-cyan-500'
               }`}
             >
               <Text className="font-semibold text-white">
-                {cameraPermission
+                {status?.granted
                   ? 'Permission Granted ✓'
                   : 'Allow Camera Access'}
               </Text>
@@ -77,11 +76,11 @@ const PermissionsScreen = ({
             <Pressable
               onPress={requestMediaPermission}
               className={`w-full items-center rounded-lg py-3 ${
-                mediaPermission ? 'bg-green-500' : 'bg-cyan-500'
+                permissionResponse ? 'bg-green-500' : 'bg-cyan-500'
               }`}
             >
               <Text className="font-semibold text-white">
-                {mediaPermission
+                {permissionResponse
                   ? 'Permission Granted ✓'
                   : 'Allow Photo Library Access'}
               </Text>
@@ -90,16 +89,16 @@ const PermissionsScreen = ({
           <View className="mt-6">
             <Pressable
               onPress={handleContinue}
-              disabled={!cameraPermission || !mediaPermission}
+              disabled={!status?.granted || !permissionResponse}
               className={`w-full items-center rounded-lg py-4 ${
-                cameraPermission && mediaPermission
+                status?.granted && permissionResponse
                   ? 'bg-cyan-500'
                   : 'bg-gray-300 dark:bg-gray-700'
               }`}
             >
               <Text
                 className={`font-semibold ${
-                  cameraPermission && mediaPermission
+                  status?.granted && permissionResponse
                     ? 'text-white'
                     : 'text-gray-500'
                 }`}
@@ -107,7 +106,7 @@ const PermissionsScreen = ({
                 Continue
               </Text>
             </Pressable>
-            {(!cameraPermission || !mediaPermission) && (
+            {(!status?.granted || !permissionResponse) && (
               <Text className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
                 Hey, don't forget to grant both permissions if you wanna roll
                 with us!

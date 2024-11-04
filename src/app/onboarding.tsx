@@ -26,7 +26,7 @@ const OnboardingScreen = () => {
             transition={1000}
           />
         </View>
-        <View className="bg-surface-900 dark:bg-surface-800 rounded-t-3xl px-6 py-8">
+        <View className="bg-surface-900 dark:bg-surface-800 rounded-t-3xl px-6 py-4">
           <Text className="mb-4 text-center text-4xl font-bold">
             Scan, List, and Sell Effortlessly
           </Text>
@@ -46,13 +46,6 @@ const OnboardingScreen = () => {
               <Text className="text-base font-medium">Post Everywhere</Text>
               <Text className="text-base text-gray-400 dark:text-gray-400">
                 One-click listing on major marketplaces
-              </Text>
-            </View>
-            <View className="flex items-center">
-              <Text className="mb-2 text-3xl font-bold text-[#8E2DE2]">📊</Text>
-              <Text className="text-base font-medium">Track Performance</Text>
-              <Text className="text-base text-gray-400 dark:text-gray-400">
-                Real-time insights and updates
               </Text>
             </View>
           </View>

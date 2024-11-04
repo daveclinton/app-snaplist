@@ -1,3 +1,5 @@
+import { useCameraPermissions } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
 import { Link, router } from 'expo-router';
 import {
   Camera,
@@ -53,9 +55,19 @@ const userData = {
 export default function Feed() {
   const isNewUser = true;
   const { ref, present, dismiss } = useModal();
+  const [status] = useCameraPermissions();
+  const [permissionResponse] = MediaLibrary.usePermissions();
+
+  console.log('Status', status?.granted);
+
+  console.log('permissionResponse', permissionResponse?.granted);
 
   const showModal = () => {
     present({ title: 'My Modal' });
+  };
+
+  const openCamera = () => {
+    router.replace('/(app)/settings');
   };
 
   const handleContinue = () => {
@@ -74,7 +86,13 @@ export default function Feed() {
         {isNewUser && <NewUserGuide />}
 
         {/* Scan Button */}
-        <ScanButton onPress={showModal} />
+        <ScanButton
+          onPress={
+            status?.granted && permissionResponse?.granted
+              ? openCamera
+              : showModal
+          }
+        />
 
         {/* Recent Scans */}
         <RecentScansSection scans={userData.recentScans} />

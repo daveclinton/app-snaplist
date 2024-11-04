@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect } from 'react';
 
 import { useAuth, useIsFirstTime } from '@/core';
@@ -26,6 +27,7 @@ export default function TabLayout() {
   console.log('IsFirstTime', isFirstTime);
 
   console.log('Status', status);
+  const { colorScheme } = useColorScheme();
 
   if (isFirstTime) {
     return <Redirect href="/onboarding" />;
@@ -34,7 +36,18 @@ export default function TabLayout() {
     return <Redirect href="/login" />;
   }
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        // Change tab bar background color
+        tabBarStyle: {
+          backgroundColor: colorScheme === 'dark' ? '#111827' : '#FFFFFF',
+        },
+        // Optional: change header background color
+        headerStyle: {
+          backgroundColor: colorScheme === 'dark' ? '#111827' : '#FFFFFF',
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{

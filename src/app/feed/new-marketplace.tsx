@@ -1,5 +1,6 @@
 import { router, Stack } from 'expo-router';
 import { Check, HamIcon, Plus, ShoppingCart, Store } from 'lucide-react-native';
+import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 
 import { Button, ScrollView, Text, TouchableOpacity, View } from '@/ui';
@@ -148,6 +149,8 @@ export default function AddPost() {
     setLoading(false);
   };
 
+  const { colorScheme } = useColorScheme();
+
   const handleMarketplacePress = (marketplace: Marketplace) => {
     console.log(`${marketplace.name} pressed`);
   };
@@ -157,6 +160,9 @@ export default function AddPost() {
         options={{
           title: 'Connect Market',
           headerBackTitle: 'Feed',
+          headerStyle: {
+            backgroundColor: colorScheme === 'dark' ? '#111827' : '#FFFFFF',
+          },
         }}
       />
       <View className="flex-1 bg-white p-4 dark:bg-gray-900">

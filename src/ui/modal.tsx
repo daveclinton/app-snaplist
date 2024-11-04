@@ -9,6 +9,7 @@ import { Pressable, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Path, Svg } from 'react-native-svg';
 
+import CustomBackground from './custom-bg';
 import { Text } from './text';
 
 type ModalProps = BottomSheetModalProps & {
@@ -86,6 +87,7 @@ export const Modal = React.forwardRef(
         snapPoints={snapPoints}
         backdropComponent={props.backdropComponent || renderBackdrop}
         handleComponent={renderHandleComponent}
+        backgroundComponent={CustomBackground}
       />
     );
   },
