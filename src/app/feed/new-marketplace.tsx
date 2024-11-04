@@ -9,18 +9,27 @@ type Marketplace = {
   name: string;
   icon: any;
   isLinked: boolean;
+  isSupported?: boolean;
 };
 
 export const MARKETPLACES: Marketplace[] = [
-  { id: 1, name: 'Facebook', icon: HamIcon, isLinked: true },
-  { id: 2, name: 'eBay', icon: Store, isLinked: false },
-  { id: 3, name: 'Amazon', icon: ShoppingCart, isLinked: false },
+  { id: 1, name: 'Facebook', icon: HamIcon, isLinked: true, isSupported: true },
+  { id: 2, name: 'eBay', icon: Store, isLinked: false, isSupported: true },
+  {
+    id: 3,
+    name: 'Amazon',
+    icon: ShoppingCart,
+    isLinked: false,
+    isSupported: true,
+  },
+  { id: 4, name: 'Etsy', icon: Store, isLinked: false, isSupported: false },
 ];
 
 type MarketplaceCardProps = {
   name: string;
   Icon: Marketplace['icon'];
   isLinked: boolean;
+  isSupported?: boolean;
   onPress?: () => void;
 };
 
@@ -28,6 +37,7 @@ const MarketplaceCard = ({
   name,
   Icon,
   isLinked,
+  isSupported = true,
   onPress,
 }: MarketplaceCardProps) => (
   <View className="mb-4 w-[48%] rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800">
@@ -35,7 +45,7 @@ const MarketplaceCard = ({
       <View className="mb-2">
         <Icon
           size={32}
-          color={isLinked ? '#0891b2' : '#94a3b8'}
+          color={!isSupported ? '#94a3b8' : isLinked ? '#0891b2' : '#94a3b8'}
           strokeWidth={1.5}
         />
       </View>
@@ -44,41 +54,55 @@ const MarketplaceCard = ({
       </Text>
       <View
         className={`mb-3 flex-row items-center rounded-full px-2 py-1 ${
-          isLinked
-            ? 'bg-cyan-50 dark:bg-cyan-900'
-            : 'bg-gray-50 dark:bg-gray-700'
+          !isSupported
+            ? 'bg-gray-100 dark:bg-gray-700'
+            : isLinked
+              ? 'bg-cyan-50 dark:bg-cyan-900'
+              : 'bg-gray-50 dark:bg-gray-700'
         }`}
       >
-        {isLinked ? (
-          <Check size={12} color="#0891b2" className="mr-1" />
+        {!isSupported ? (
+          <Text className="text-xs text-gray-500 dark:text-gray-400">
+            Coming Soon
+          </Text>
+        ) : isLinked ? (
+          <>
+            <Check size={12} color="#0891b2" className="mr-1" />
+            <Text className="text-xs text-cyan-600 dark:text-cyan-300">
+              Connected
+            </Text>
+          </>
         ) : (
-          <Plus size={12} color="#94a3b8" className="mr-1" />
+          <>
+            <Plus size={12} color="#94a3b8" className="mr-1" />
+            <Text className="text-xs text-gray-500 dark:text-gray-400">
+              Link Now
+            </Text>
+          </>
         )}
-        <Text
-          className={`text-xs ${
-            isLinked
-              ? 'text-cyan-600 dark:text-cyan-300'
-              : 'text-gray-500 dark:text-gray-400'
-          }`}
-        >
-          {isLinked ? 'Connected' : 'Link Now'}
-        </Text>
       </View>
 
       <TouchableOpacity
-        onPress={onPress}
+        onPress={isSupported ? onPress : undefined}
         className={`w-full flex-row items-center justify-center rounded-lg px-4 py-2 ${
-          isLinked
+          !isSupported
             ? 'bg-gray-100 dark:bg-gray-700'
-            : 'bg-cyan-500 dark:bg-cyan-600'
+            : isLinked
+              ? 'bg-gray-100 dark:bg-gray-700'
+              : 'bg-cyan-500 dark:bg-cyan-600'
         }`}
+        disabled={!isSupported}
       >
         <Text
           className={`text-sm font-medium ${
-            isLinked ? 'text-gray-600 dark:text-gray-300' : 'text-white'
+            !isSupported
+              ? 'text-gray-400 dark:text-gray-500'
+              : isLinked
+                ? 'text-gray-600 dark:text-gray-300'
+                : 'text-white'
           }`}
         >
-          {isLinked ? 'Manage' : 'Connect'}
+          {!isSupported ? 'Not Available' : isLinked ? 'Manage' : 'Connect'}
         </Text>
       </TouchableOpacity>
     </View>
@@ -159,6 +183,7 @@ export default function AddPost() {
                   name={marketplace.name}
                   Icon={marketplace.icon}
                   isLinked={marketplace.isLinked}
+                  isSupported={marketplace.isSupported}
                   onPress={() => handleMarketplacePress(marketplace)}
                 />
               ))}
