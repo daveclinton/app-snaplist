@@ -1,5 +1,3 @@
-import { useCameraPermissions } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
 import { Link, router } from 'expo-router';
 import {
   Camera,
@@ -12,17 +10,14 @@ import {
   User,
 } from 'lucide-react-native';
 import { MotiScrollView } from 'moti';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { Alert, Linking } from 'react-native';
 
-import PermissionsScreen from '@/components/onbad';
 import {
-  FocusAwareStatusBar,
-  Modal,
-  Text,
-  TouchableOpacity,
-  useModal,
-  View,
-} from '@/ui';
+  useCameraPermission,
+  usePhotoLibraryPermission,
+} from '@/core/hooks/use-permissions';
+import { FocusAwareStatusBar, Text, TouchableOpacity, View } from '@/ui';
 
 const userData = {
   name: 'John',
@@ -67,26 +62,32 @@ const userData = {
 
 export default function Feed() {
   const isNewUser = true;
-  const { ref, present, dismiss } = useModal();
-  const [status] = useCameraPermissions();
-  const [permissionResponse] = MediaLibrary.usePermissions();
-
-  console.log('Status', status?.granted);
-
-  console.log('permissionResponse', permissionResponse?.granted);
-
-  const showModal = () => {
-    present({ title: 'My Modal' });
-  };
-
-  const openCamera = () => {
-    router.replace('/(app)/settings');
-  };
-
-  const handleContinue = () => {
-    dismiss();
-    router.replace('/(app)/style');
-  };
+  const { requestCameraAccessIfNeeded } = useCameraPermission();
+  const { requestPhotoAccessIfNeeded } = usePhotoLibraryPermission();
+  const onPressTakePicture = useCallback(async () => {
+    try {
+      if (!(await requestCameraAccessIfNeeded())) {
+        return;
+      }
+      if (!(await requestPhotoAccessIfNeeded())) {
+        return;
+      }
+      await router.push('/feed/scan');
+    } catch (err: any) {
+      // ignore
+      Alert.alert(
+        'Permissions needed',
+        `Snaplist does not have permission to access your permissions.`,
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        ],
+      );
+    }
+  }, [requestCameraAccessIfNeeded, requestPhotoAccessIfNeeded]);
 
   return (
     <View className="flex-1 bg-white px-4 dark:bg-gray-900">
@@ -99,20 +100,11 @@ export default function Feed() {
         {isNewUser && <NewUserGuide />}
 
         {/* Scan Button */}
-        <ScanButton
-          onPress={
-            status?.granted && permissionResponse?.granted
-              ? openCamera
-              : showModal
-          }
-        />
+        <ScanButton onPress={onPressTakePicture} />
 
         {/* Recent Scans */}
         <RecentScansSection scans={userData.recentScans} />
       </MotiScrollView>
-      <Modal snapPoints={['80%']} ref={ref}>
-        <PermissionsScreen handleContinue={handleContinue} />
-      </Modal>
     </View>
   );
 }

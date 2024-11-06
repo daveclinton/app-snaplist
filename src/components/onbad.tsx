@@ -76,11 +76,11 @@ const PermissionsScreen = ({
             <Pressable
               onPress={requestMediaPermission}
               className={`w-full items-center rounded-lg py-3 ${
-                permissionResponse ? 'bg-green-500' : 'bg-cyan-500'
+                permissionResponse?.granted ? 'bg-green-500' : 'bg-cyan-500'
               }`}
             >
               <Text className="font-semibold text-white">
-                {permissionResponse
+                {permissionResponse?.granted
                   ? 'Permission Granted ✓'
                   : 'Allow Photo Library Access'}
               </Text>
@@ -89,16 +89,16 @@ const PermissionsScreen = ({
           <View className="mt-6">
             <Pressable
               onPress={handleContinue}
-              disabled={!status?.granted || !permissionResponse}
+              disabled={!status?.granted || !permissionResponse?.granted}
               className={`w-full items-center rounded-lg py-4 ${
-                status?.granted && permissionResponse
+                status?.granted && permissionResponse?.granted
                   ? 'bg-cyan-500'
                   : 'bg-gray-300 dark:bg-gray-700'
               }`}
             >
               <Text
                 className={`font-semibold ${
-                  status?.granted && permissionResponse
+                  status?.granted && permissionResponse?.granted
                     ? 'text-white'
                     : 'text-gray-500'
                 }`}
@@ -106,7 +106,7 @@ const PermissionsScreen = ({
                 Continue
               </Text>
             </Pressable>
-            {(!status?.granted || !permissionResponse) && (
+            {(!status?.granted || !permissionResponse?.granted) && (
               <Text className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
                 Hey, don't forget to grant both permissions if you wanna roll
                 with us!

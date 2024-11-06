@@ -33,10 +33,6 @@ const CustomBackground: React.FC<BottomSheetBackgroundProps> = ({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
     shadowOpacity: withTiming(animatedIndex.value * 0.2),
     shadowRadius: 5,
     elevation: 5,

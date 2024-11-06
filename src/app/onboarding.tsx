@@ -1,69 +1,81 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
+import { StatusBar } from 'expo-status-bar';
+import LottieView from 'lottie-react-native';
+import { useColorScheme } from 'nativewind';
+import React, { useRef } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useIsFirstTime } from '@/core/hooks';
-import {
-  Button,
-  FocusAwareStatusBar,
-  Image,
-  SafeAreaView,
-  Text,
-  View,
-} from '@/ui';
+import { useIsFirstTime } from '@/core';
+import { Button, SafeAreaView, Text, View } from '@/ui';
 
 const OnboardingScreen = () => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const [_, setIsFirstTime] = useIsFirstTime();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const animation = useRef<LottieView>(null);
 
   return (
-    <View className="flex h-full py-10">
-      <FocusAwareStatusBar />
-      <View className="flex-1">
-        <View className="flex-1 items-center justify-center">
-          <Image
-            className="w-full flex-1"
-            source={require('../../assets/onboarding.svg')}
-            transition={1000}
-          />
+    <SafeAreaView className={`flex-1 bg-white dark:bg-gray-900`}>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+
+      <View className="absolute inset-0 opacity-5">
+        <View className="flex-1 flex-row flex-wrap">
+          {[...Array(100)].map((_, i) => (
+            <View
+              key={i}
+              className="size-8 border border-gray-200 dark:border-gray-700"
+            />
+          ))}
         </View>
-        <View className="bg-surface-900 dark:bg-surface-800 rounded-t-3xl px-6 py-4">
-          <Text className="mb-4 text-center text-4xl font-bold">
-            Scan, List, and Sell Effortlessly
-          </Text>
-          <Text className="mb-6 text-center text-lg text-gray-400 dark:text-gray-400">
-            AI-Powered Listings on Multiple Marketplaces
-          </Text>
-          <View className="mb-6 grid grid-cols-3 gap-4">
-            <View className="flex items-center">
-              <Text className="mb-2 text-3xl font-bold text-[#8E2DE2]">🔍</Text>
-              <Text className="text-base font-medium">Scan with AI</Text>
-              <Text className="text-base text-gray-400 dark:text-gray-400">
-                Automatic descriptions and price suggestions
-              </Text>
-            </View>
-            <View className="flex items-center">
-              <Text className="mb-2 text-3xl font-bold text-[#8E2DE2]">📤</Text>
-              <Text className="text-base font-medium">Post Everywhere</Text>
-              <Text className="text-base text-gray-400 dark:text-gray-400">
-                One-click listing on major marketplaces
-              </Text>
-            </View>
+      </View>
+
+      <View className="flex-1">
+        <View className="mt-6 flex-[0.6] items-center justify-center px-6">
+          <View className="size-72 items-center justify-center">
+            <LottieView
+              autoPlay
+              ref={animation}
+              style={{
+                width: '100%',
+                flex: 1,
+              }}
+              source={require('../../assets/onboarding.json')}
+            />
           </View>
-          <SafeAreaView>
+        </View>
+
+        <View className="flex-[0.4] justify-end px-6">
+          <View className="mb-8 space-y-3">
+            <Text className="text-center text-4xl font-bold text-gray-800 dark:text-white">
+              Post and Sell
+              <Text className="text-green-500"> with Ease!</Text>
+            </Text>
+
+            <Text className="text-center text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+              Ready to make some cash? Start posting your items to top
+              marketplaces like eBay, Facebook, and Mercari. Simplify your
+              selling, and reach buyers in no time!
+            </Text>
+          </View>
+
+          <View className="space-y-4 pb-6">
             <Button
-              label="Start Scanning Now"
+              label="Start Selling"
               onPress={() => {
                 setIsFirstTime(false);
                 router.replace('/login');
               }}
             />
-          </SafeAreaView>
-          <Text className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
-            Your data stays secure with us.
-          </Text>
+
+            <Text className="text-center text-sm text-gray-500 dark:text-gray-400">
+              Scan, List, and Sell Effortlessly with just a few taps
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

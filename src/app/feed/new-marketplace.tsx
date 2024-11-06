@@ -138,7 +138,7 @@ const BottomCTA = ({ linkedCount, onContinue, loading }: BottomCTAProps) => {
   );
 };
 
-export default function AddPost() {
+export default function AddMarketPlace() {
   const linkedCount = MARKETPLACES.filter((m) => m.isLinked).length;
   const [loading, setLoading] = React.useState(false);
 

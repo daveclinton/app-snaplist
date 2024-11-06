@@ -38,11 +38,9 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        // Change tab bar background color
         tabBarStyle: {
           backgroundColor: colorScheme === 'dark' ? '#111827' : '#FFFFFF',
         },
-        // Optional: change header background color
         headerStyle: {
           backgroundColor: colorScheme === 'dark' ? '#111827' : '#FFFFFF',
         },
