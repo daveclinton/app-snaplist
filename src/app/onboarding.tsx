@@ -32,7 +32,7 @@ const OnboardingScreen = () => {
       </View>
 
       <View className="flex-1">
-        <View className="mt-6 flex-[0.6] items-center justify-center px-6">
+        <View className="mt-6 flex-[0.3] items-center justify-center px-6">
           <View className="size-72 items-center justify-center">
             <LottieView
               autoPlay
@@ -46,7 +46,7 @@ const OnboardingScreen = () => {
           </View>
         </View>
 
-        <View className="flex-[0.4] justify-end px-6">
+        <View className="flex-[0.5] justify-end px-6">
           <View className="mb-8 space-y-3">
             <Text className="text-center text-4xl font-bold text-gray-800 dark:text-white">
               Post and Sell
@@ -54,7 +54,7 @@ const OnboardingScreen = () => {
             </Text>
 
             <Text className="text-center text-lg leading-relaxed text-gray-600 dark:text-gray-300">
-              Ready to make some cash? Start posting your items to top
+              Ready to save some time? Start posting your items to top
               marketplaces like eBay, Facebook, and Mercari. Simplify your
               selling, and reach buyers in no time!
             </Text>

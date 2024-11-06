@@ -1,14 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
+import { ListPlus } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect } from 'react';
 
 import { useAuth, useIsFirstTime } from '@/core';
-import {
-  Feed as FeedIcon,
-  Settings as SettingsIcon,
-  Style as StyleIcon,
-} from '@/ui/icons';
+import { Feed as FeedIcon, Settings as SettingsIcon } from '@/ui/icons';
 
 export default function TabLayout() {
   const status = useAuth.use.status();
@@ -51,17 +48,17 @@ export default function TabLayout() {
         options={{
           title: 'Feed',
           tabBarIcon: ({ color }) => <FeedIcon color={color} />,
-          // headerRight: () => <CreateNewMarketPlace />,
+          headerShown: false,
           tabBarTestID: 'feed-tab',
         }}
       />
 
       <Tabs.Screen
-        name="style"
+        name="listings"
         options={{
-          title: 'Style',
+          title: 'Listings',
           headerShown: false,
-          tabBarIcon: ({ color }) => <StyleIcon color={color} />,
+          tabBarIcon: ({ color }) => <ListPlus color={color} />,
           tabBarTestID: 'style-tab',
         }}
       />
