@@ -122,7 +122,7 @@ const BottomCTA = ({ linkedCount, onContinue, loading }: BottomCTAProps) => {
     <View className="absolute inset-x-0 bottom-0 border-t border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center">
-          <View className="mr-2 size-2 rounded-full bg-green-500" />
+          <View className="mr-2 size-4 rounded-full bg-green-500" />
           <Text className="text-sm text-gray-600 dark:text-gray-300">
             {linkedCount} marketplace{linkedCount > 1 ? 's' : ''} ready
           </Text>
@@ -165,8 +165,12 @@ export default function AddMarketPlace() {
           },
         }}
       />
-      <View className="flex-1 bg-white p-4 dark:bg-gray-900">
-        <View className="px-6 pb-4 pt-6">
+      <View className="flex-1 bg-white dark:bg-gray-900">
+        <ScrollView
+          className="flex-[0.8] px-6 pb-4 pt-6"
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+        >
           <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
             Link Your Marketplaces
           </Text>
@@ -181,28 +185,25 @@ export default function AddMarketPlace() {
             </Text>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View className="flex-row flex-wrap justify-between">
-              {MARKETPLACES.map((marketplace) => (
-                <MarketplaceCard
-                  key={marketplace.id}
-                  name={marketplace.name}
-                  Icon={marketplace.icon}
-                  isLinked={marketplace.isLinked}
-                  isSupported={marketplace.isSupported}
-                  onPress={() => handleMarketplacePress(marketplace)}
-                />
-              ))}
-            </View>
-            <View className="h-24" />
-          </ScrollView>
+          <View className="flex-row flex-wrap justify-between">
+            {MARKETPLACES.map((marketplace) => (
+              <MarketplaceCard
+                key={marketplace.id}
+                name={marketplace.name}
+                Icon={marketplace.icon}
+                isLinked={marketplace.isLinked}
+                isSupported={marketplace.isSupported}
+                onPress={() => handleMarketplacePress(marketplace)}
+              />
+            ))}
+          </View>
+        </ScrollView>
 
-          <BottomCTA
-            linkedCount={linkedCount}
-            onContinue={handleContinue}
-            loading={loading}
-          />
-        </View>
+        <BottomCTA
+          linkedCount={linkedCount}
+          onContinue={handleContinue}
+          loading={loading}
+        />
       </View>
     </>
   );

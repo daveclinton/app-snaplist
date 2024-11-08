@@ -3,7 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
-import { Animated, Pressable, StyleSheet, TextInput } from 'react-native';
+import { Animated, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FocusAwareStatusBar, Text, View } from '@/ui';
@@ -11,7 +11,13 @@ import { FocusAwareStatusBar, Text, View } from '@/ui';
 const HEADER_HEIGHT = 120;
 const COLLAPSED_HEIGHT = 60;
 
-export const FeedHeader = ({ children }: { children: React.ReactNode }) => {
+export const FeedHeader = ({
+  children,
+  onCameraOpen,
+}: {
+  children: React.ReactNode;
+  onCameraOpen: () => void;
+}) => {
   const scrollY = new Animated.Value(0);
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -89,7 +95,8 @@ export const FeedHeader = ({ children }: { children: React.ReactNode }) => {
           <Animated.View
             style={[styles.searchContainer, { top: searchBarTop }]}
           >
-            <View
+            <Pressable
+              onPress={onCameraOpen}
               style={[
                 styles.searchBar,
                 {
@@ -97,23 +104,24 @@ export const FeedHeader = ({ children }: { children: React.ReactNode }) => {
                 },
               ]}
             >
-              <MaterialIcons
-                name="search"
-                size={24}
-                color={isDark ? '#9CA3AF' : '#6B7280'}
-                style={styles.searchIcon}
-              />
-              <TextInput
-                placeholder="Search"
-                placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+              <Text
                 style={[
-                  styles.searchInput,
+                  styles.searchPrompt,
                   {
-                    color: isDark ? '#FFFFFF' : '#000000',
+                    color: isDark ? '#9CA3AF' : '#6B7280',
                   },
                 ]}
-              />
-            </View>
+              >
+                Click camera to search
+              </Text>
+              <View style={styles.actionButton}>
+                <MaterialIcons
+                  name="camera-alt"
+                  size={24}
+                  color={isDark ? '#9CA3AF' : '#6B7280'}
+                />
+              </View>
+            </Pressable>
           </Animated.View>
         </Animated.View>
 
@@ -197,15 +205,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 10,
     padding: 8,
+    justifyContent: 'space-between',
   },
-  searchInput: {
-    flex: 1,
-    marginLeft: 8,
+  searchPrompt: {
     fontSize: 16,
-    padding: 0,
-  },
-  searchIcon: {
-    marginHorizontal: 4,
+    marginLeft: 8,
   },
   scrollView: {
     flex: 1,

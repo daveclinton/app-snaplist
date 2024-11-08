@@ -83,6 +83,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         isAccessMediaLocationEnabled: true,
       },
     ],
+    [
+      'expo-image-picker',
+      {
+        photosPermission: 'The app accesses your photos to let scan and search',
+      },
+    ],
     'expo-localization',
     'expo-router',
     ['app-icon-badge', appIconBadgeConfig],

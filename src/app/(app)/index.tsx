@@ -73,7 +73,7 @@ export default function Feed() {
       if (!(await requestPhotoAccessIfNeeded())) {
         return;
       }
-      await router.push('/feed/scan');
+      await router.push('/scan/scan');
     } catch (err: any) {
       // ignore
       Alert.alert(
@@ -91,7 +91,7 @@ export default function Feed() {
   }, [requestCameraAccessIfNeeded, requestPhotoAccessIfNeeded]);
 
   return (
-    <FeedHeader>
+    <FeedHeader onCameraOpen={onPressTakePicture}>
       <View className="flex-1 bg-white px-4 dark:bg-gray-900">
         <MotiScrollView className="px-3" showsVerticalScrollIndicator={false}>
           <FocusAwareStatusBar />
