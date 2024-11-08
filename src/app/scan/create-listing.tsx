@@ -178,7 +178,11 @@ export default function CreateListingScreen() {
     try {
       const payload = createListingPayload(formData);
       console.log('Submitting:', payload);
-      router.back();
+      const encodedInitialData = encodeURIComponent(JSON.stringify(payload));
+      router.push({
+        pathname: '/scan/post-listing',
+        params: { initialData: encodedInitialData },
+      });
     } catch (error) {
       console.error('Error creating listing:', error);
       setErrors({ submit: 'Failed to create listing. Please try again.' });
