@@ -49,3 +49,25 @@ pnpm android
 - [Forms](https://starter.obytes.com/ui-and-theme/Forms)
 - [Data fetching](https://starter.obytes.com/guides/data-fetching)
 - [Contribute to starter](https://starter.obytes.com/how-to-contribute/)
+
+Site URL: exp://localhost:19000
+Redirect URLs:
+
+- exp://localhost:19000/auth/callback
+- com.snaplist.development://
+
+<!-- STAGING -->
+
+Site URL: exp://exp.host/@martinki/snaplist
+Redirect URLs:
+
+- com.snaplist.staging://auth/callback
+- exp://exp.host/@martinki/snaplist/auth/callback
+
+<!-- PRODUCTION -->
+
+Site URL: [Your production URL]
+Redirect URLs:
+
+- com.snaplist://auth/callback
+- [Your production domain]/auth/callback
