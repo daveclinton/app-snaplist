@@ -63,7 +63,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundler: 'metro',
   },
   plugins: [
-    'expo-linking',
     [
       'expo-font',
       {

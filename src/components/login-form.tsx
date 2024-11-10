@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
+import { Alert } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import * as z from 'zod';
 
@@ -50,10 +51,16 @@ export const LoginForm = ({
       return;
     }
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: 'com.snaplist://auth/reset-password',
+      });
       if (error) {
         setResetMessage(`Error: ${error.message}`);
       } else {
+        Alert.alert(
+          'Check your email',
+          'We have sent you a password reset link',
+        );
         setResetMessage('Password reset email sent successfully!');
       }
     } catch (error) {

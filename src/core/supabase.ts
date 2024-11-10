@@ -57,7 +57,7 @@ const initializeSupabase = (): SupabaseClient => {
 // Create and export the client
 export const supabase = initializeSupabase();
 
-// Export a verification function
+
 export const verifySupabaseConnection = async () => {
   try {
     // Try to make a simple auth call to verify the connection
