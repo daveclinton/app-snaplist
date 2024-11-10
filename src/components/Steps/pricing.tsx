@@ -1,9 +1,15 @@
+import {
+  type ImagePickerOptions,
+  launchImageLibraryAsync,
+  MediaTypeOptions,
+} from 'expo-image-picker';
 import { Camera, X } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Image, Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, TextInput } from 'react-native';
+import * as ImagePicker from 'react-native-image-crop-picker';
 
 import { type ListingFormData } from '@/api';
-import { Button } from '@/ui';
+import { Button, Image, Text, View } from '@/ui';
 
 interface PricingFormProps {
   formData: ListingFormData;
@@ -116,19 +122,66 @@ export default function PricingForm({
   const handleImageSelect = async () => {
     setIsSelectingImage(true);
     try {
-      // Implement image picking logic here
-      // This is a placeholder URL for demonstration
-      const imageUrl = '/api/placeholder/400/400';
-      updateForm('pictures', [...(formData.pictures || []), imageUrl]);
+      // Launch image picker
+      const pickerOptions: ImagePickerOptions = {
+        mediaTypes: MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      };
+
+      const result = await launchImageLibraryAsync(pickerOptions);
+
+      if (!result.canceled) {
+        // Get the first selected asset
+        const selectedImage = result.assets[0];
+
+        // Crop the image
+        const croppedImage = await ImagePicker.openCropper({
+          path: selectedImage.uri,
+          width: 800,
+          height: 800,
+          cropperCircleOverlay: false,
+          cropping: true,
+          compressImageQuality: 0.8,
+          mediaType: 'photo',
+        });
+
+        // Update form with the cropped image
+        updateForm('pictures', [
+          ...(formData.pictures || []),
+          croppedImage.path,
+        ]);
+      }
     } catch (error) {
-      console.error('Error selecting image:', error);
+      console.error('Error selecting or cropping image:', error);
+      // You might want to show an error message to the user here
+    } finally {
+      setIsSelectingImage(false);
+    }
+  };
+
+  const handleCameraCapture = async () => {
+    setIsSelectingImage(true);
+    try {
+      const image = await ImagePicker.openCamera({
+        width: 800,
+        height: 800,
+        cropping: true,
+        compressImageQuality: 0.8,
+      });
+
+      updateForm('pictures', [...(formData.pictures || []), image.path]);
+    } catch (error) {
+      console.error('Error capturing image:', error);
+      // You might want to show an error message to the user here
     } finally {
       setIsSelectingImage(false);
     }
   };
 
   const removeImage = (index: number) => {
-    const newPictures = [...formData.pictures];
+    const newPictures = [...(formData.pictures || [])];
     newPictures.splice(index, 1);
     updateForm('pictures', newPictures);
   };
@@ -165,15 +218,27 @@ export default function PricingForm({
             ))}
 
             {(formData.pictures?.length || 0) < MAX_IMAGES && (
-              <Pressable
-                onPress={handleImageSelect}
-                className="flex size-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
-              >
-                <Camera className="mb-2 text-gray-400" />
-                <Text className="text-sm text-gray-500 dark:text-gray-400">
-                  Add Photo
-                </Text>
-              </Pressable>
+              <View className="flex-row gap-2">
+                <Pressable
+                  onPress={handleImageSelect}
+                  className="flex size-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+                >
+                  <Camera className="mb-2 text-gray-400" />
+                  <Text className="text-sm text-gray-500 dark:text-gray-400">
+                    Gallery
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  onPress={handleCameraCapture}
+                  className="flex size-32 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+                >
+                  <Camera className="mb-2 text-gray-400" />
+                  <Text className="text-sm text-gray-500 dark:text-gray-400">
+                    Camera
+                  </Text>
+                </Pressable>
+              </View>
             )}
           </View>
 

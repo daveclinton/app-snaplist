@@ -21,6 +21,8 @@ export default function ProductListingPage() {
     ? JSON.parse(decodeURIComponent(initialData))
     : null;
 
+  console.log(parsedData);
+
   const handleStatusChange = async () => {
     setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));

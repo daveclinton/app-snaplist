@@ -1,54 +1,57 @@
-import { router, Stack } from 'expo-router';
-import { Check, HamIcon, Plus, ShoppingCart, Store } from 'lucide-react-native';
-import { useColorScheme } from 'nativewind';
+import { router } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
+import { Check, Plus, Store } from 'lucide-react-native';
 import * as React from 'react';
 
-import { Button, ScrollView, Text, TouchableOpacity, View } from '@/ui';
+import { SUPPORTED_MARKETPLACES } from '@/core/constants';
+import { Button, Image, ScrollView, Text, TouchableOpacity, View } from '@/ui';
 
-type Marketplace = {
+interface MarketplaceConfig {
   id: number;
   name: string;
-  icon: any;
-  isLinked: boolean;
-  isSupported?: boolean;
-};
-
-export const MARKETPLACES: Marketplace[] = [
-  { id: 1, name: 'Facebook', icon: HamIcon, isLinked: true, isSupported: true },
-  { id: 2, name: 'eBay', icon: Store, isLinked: false, isSupported: true },
-  {
-    id: 3,
-    name: 'Amazon',
-    icon: ShoppingCart,
-    isLinked: false,
-    isSupported: true,
-  },
-  { id: 4, name: 'Etsy', icon: Store, isLinked: false, isSupported: false },
-];
+  slug: string;
+  icon_url: string;
+  oauth_url: string;
+  token_url: string;
+  client_id: string;
+  client_secret: string;
+  redirect_uri: string;
+  scope: string;
+  is_supported: boolean;
+  is_linked: boolean;
+}
 
 type MarketplaceCardProps = {
   name: string;
-  Icon: Marketplace['icon'];
   isLinked: boolean;
   isSupported?: boolean;
   onPress?: () => void;
+  iconUrl?: string;
 };
 
 const MarketplaceCard = ({
   name,
-  Icon,
   isLinked,
   isSupported = true,
   onPress,
+  iconUrl,
 }: MarketplaceCardProps) => (
   <View className="mb-4 w-[48%] rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800">
     <View className="items-center">
       <View className="mb-2">
-        <Icon
-          size={32}
-          color={!isSupported ? '#94a3b8' : isLinked ? '#0891b2' : '#94a3b8'}
-          strokeWidth={1.5}
-        />
+        {iconUrl ? (
+          <Image
+            source={{ uri: iconUrl }}
+            className="size-8 rounded-md"
+            transition={1000}
+          />
+        ) : (
+          <Store
+            size={32}
+            color={!isSupported ? '#94a3b8' : isLinked ? '#0891b2' : '#94a3b8'}
+            strokeWidth={1.5}
+          />
+        )}
       </View>
       <Text className="mb-2 text-base font-medium text-gray-800 dark:text-gray-100">
         {name}
@@ -115,6 +118,7 @@ type BottomCTAProps = {
   onContinue: () => void;
   loading: boolean;
 };
+
 const BottomCTA = ({ linkedCount, onContinue, loading }: BottomCTAProps) => {
   if (linkedCount === 0) return null;
 
@@ -138,73 +142,167 @@ const BottomCTA = ({ linkedCount, onContinue, loading }: BottomCTAProps) => {
   );
 };
 
-export default function AddMarketPlace() {
-  const linkedCount = MARKETPLACES.filter((m) => m.isLinked).length;
+export default function MarketplaceOAuthScreen() {
   const [loading, setLoading] = React.useState(false);
+  const [connectedMarketplaces, setConnectedMarketplaces] = React.useState<
+    string[]
+  >([]);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const exchangeCodeForToken = async ({
+    code,
+    marketplaceId,
+  }: {
+    code: string;
+    marketplaceId: number;
+  }) => {
+    const marketplace = SUPPORTED_MARKETPLACES.find(
+      (m) => m.id === marketplaceId,
+    );
+    if (!marketplace) return;
+
+    try {
+      const response = await fetch(marketplace.token_url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code,
+          client_id: marketplace.client_id,
+          client_secret: marketplace.client_secret,
+          redirect_uri: marketplace.redirect_uri,
+          grant_type: 'authorization_code',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to exchange code for token');
+      }
+
+      // Update connected marketplaces
+      setConnectedMarketplaces((prev) => [...prev, marketplace.slug]);
+
+      // Store tokens securely here
+      // You might want to use SecureStore or similar
+    } catch (error) {
+      console.error('Token Exchange Error:', error);
+      setError('Failed to complete marketplace connection');
+      throw error;
+    }
+  };
+
+  const initiateOAuth = async (marketplace: MarketplaceConfig) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Generate state with marketplace ID
+      const stateValue = btoa(
+        JSON.stringify({ marketplaceId: marketplace.id }),
+      );
+
+      const params = new URLSearchParams({
+        client_id: marketplace.client_id,
+        redirect_uri: marketplace.redirect_uri,
+        scope: marketplace.scope,
+        response_type: 'code',
+        state: stateValue,
+      });
+
+      const authUrl = `${marketplace.oauth_url}?${params.toString()}`;
+
+      const result = await WebBrowser.openAuthSessionAsync(
+        authUrl,
+        marketplace.redirect_uri,
+      );
+
+      if (result.type === 'success' && result.url) {
+        const responseUrl = new URL(result.url);
+        const code = responseUrl.searchParams.get('code');
+        const returnedState = responseUrl.searchParams.get('state');
+
+        if (returnedState !== stateValue) {
+          throw new Error('State mismatch - possible security issue');
+        }
+
+        if (code) {
+          const { marketplaceId } = JSON.parse(atob(returnedState));
+          await exchangeCodeForToken({ code, marketplaceId });
+        }
+      } else if (result.type === 'cancel') {
+        // User cancelled the authentication
+        console.log('Authentication cancelled by user');
+      }
+    } catch (error) {
+      console.error('OAuth Error:', error);
+      setError('Failed to connect to marketplace');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleContinue = async () => {
     setLoading(true);
-    console.log('Here');
-    router.back();
-    setLoading(false);
+    try {
+      // Here you might want to do any final setup before proceeding
+      router.back();
+    } catch (error) {
+      console.error('Continue Error:', error);
+      setError('Failed to proceed');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const { colorScheme } = useColorScheme();
-
-  const handleMarketplacePress = (marketplace: Marketplace) => {
-    console.log(`${marketplace.name} pressed`);
-  };
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: 'Connect Market',
-          headerBackTitle: 'Feed',
-          headerStyle: {
-            backgroundColor: colorScheme === 'dark' ? '#111827' : '#FFFFFF',
-          },
-        }}
+    <View className="flex-1 bg-white dark:bg-gray-900">
+      <ScrollView
+        className="flex-[0.8] px-6 pb-4 pt-6"
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+          Link Your Marketplaces
+        </Text>
+        <Text className="mb-4 text-base text-gray-600 dark:text-gray-400">
+          Connect your online stores to manage all your listings from one place
+        </Text>
+
+        <View className="mb-4 flex-row items-center rounded-lg bg-cyan-50 p-3 dark:bg-cyan-900">
+          <Text className="font-medium text-cyan-700 dark:text-cyan-200">
+            {connectedMarketplaces.length} of {SUPPORTED_MARKETPLACES.length}{' '}
+            Linked
+          </Text>
+        </View>
+
+        {error && (
+          <View className="mb-4 rounded-lg bg-red-50 p-3 dark:bg-red-900">
+            <Text className="text-red-700 dark:text-red-200">{error}</Text>
+          </View>
+        )}
+
+        <View className="flex-row flex-wrap justify-between">
+          {SUPPORTED_MARKETPLACES.map((marketplace) => (
+            <MarketplaceCard
+              key={marketplace.id}
+              name={marketplace.name}
+              iconUrl={marketplace.icon_url}
+              isLinked={connectedMarketplaces.includes(marketplace.slug)}
+              isSupported={marketplace.is_supported}
+              onPress={() => initiateOAuth(marketplace)}
+            />
+          ))}
+        </View>
+      </ScrollView>
+
+      <BottomCTA
+        linkedCount={connectedMarketplaces.length}
+        onContinue={handleContinue}
+        loading={loading}
       />
-      <View className="flex-1 bg-white dark:bg-gray-900">
-        <ScrollView
-          className="flex-[0.8] px-6 pb-4 pt-6"
-          contentContainerStyle={{ paddingBottom: 100 }}
-          showsVerticalScrollIndicator={false}
-        >
-          <Text className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
-            Link Your Marketplaces
-          </Text>
-          <Text className="mb-4 text-base text-gray-600 dark:text-gray-400">
-            Connect your online stores to manage all your listings from one
-            place
-          </Text>
-
-          <View className="mb-4 flex-row items-center rounded-lg bg-cyan-50 p-3 dark:bg-cyan-900">
-            <Text className="font-medium text-cyan-700 dark:text-cyan-200">
-              {linkedCount} of {MARKETPLACES.length} Linked
-            </Text>
-          </View>
-
-          <View className="flex-row flex-wrap justify-between">
-            {MARKETPLACES.map((marketplace) => (
-              <MarketplaceCard
-                key={marketplace.id}
-                name={marketplace.name}
-                Icon={marketplace.icon}
-                isLinked={marketplace.isLinked}
-                isSupported={marketplace.isSupported}
-                onPress={() => handleMarketplacePress(marketplace)}
-              />
-            ))}
-          </View>
-        </ScrollView>
-
-        <BottomCTA
-          linkedCount={linkedCount}
-          onContinue={handleContinue}
-          loading={loading}
-        />
-      </View>
-    </>
+    </View>
   );
 }

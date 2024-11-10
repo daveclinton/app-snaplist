@@ -20,6 +20,7 @@ import PricingForm from '@/components/Steps/pricing';
 import ReturnsForm from '@/components/Steps/returns';
 import ShippingForm from '@/components/Steps/shipping';
 import SpecificsForm from '@/components/Steps/specifics-info';
+import StepProgressIndicator from '@/components/Steps/step-progress';
 import { Button, Text } from '@/ui';
 
 const STEPS = [
@@ -216,16 +217,12 @@ export default function CreateListingScreen() {
         style={styles.container}
       >
         {/* Progress Indicator */}
-        <View className="flex-row justify-between bg-gray-50 px-4 py-2 dark:bg-gray-800">
-          {STEPS.map(({ id }) => (
-            <View
-              key={id}
-              className={`size-2 rounded-full ${
-                step >= id ? 'bg-cyan-500' : 'bg-gray-300 dark:bg-gray-700'
-              }`}
-            />
-          ))}
-        </View>
+        <StepProgressIndicator
+          currentStep={step}
+          totalSteps={STEPS.length}
+          activeColor="#0284c7" // Cyan-500
+          inactiveColor="#d1d5db" // Gray-300
+        />
 
         {/* Step Title */}
         <View className="border-b border-gray-200 p-4 dark:border-gray-800">

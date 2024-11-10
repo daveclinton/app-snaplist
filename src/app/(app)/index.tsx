@@ -2,10 +2,8 @@ import { Link, router } from 'expo-router';
 import {
   Camera,
   ChevronRight,
-  HamIcon,
   HelpCircle,
   Plus,
-  ShoppingCart,
   Store,
 } from 'lucide-react-native';
 import { MotiScrollView } from 'moti';
@@ -14,33 +12,16 @@ import { Alert, Linking } from 'react-native';
 
 import { FeedHeader } from '@/components/feed-screen';
 import RecentListings from '@/components/recent-listings';
+import { SUPPORTED_MARKETPLACES } from '@/core/constants';
 import {
   useCameraPermission,
   usePhotoLibraryPermission,
 } from '@/core/hooks/use-permissions';
-import { FocusAwareStatusBar, Text, TouchableOpacity, View } from '@/ui';
+import { FocusAwareStatusBar, Image, Text, TouchableOpacity, View } from '@/ui';
 
 export const userData = {
   name: 'John',
   notifications: 3,
-  linkedAccounts: [
-    {
-      id: 1,
-      name: 'Facebook',
-      icon: HamIcon,
-      isLinked: true,
-      isSupported: true,
-    },
-    { id: 2, name: 'eBay', icon: Store, isLinked: false, isSupported: true },
-    {
-      id: 3,
-      name: 'Amazon',
-      icon: ShoppingCart,
-      isLinked: false,
-      isSupported: true,
-    },
-    { id: 4, name: 'Etsy', icon: Store, isLinked: false, isSupported: false },
-  ],
   recentScans: [
     {
       id: 1,
@@ -96,7 +77,7 @@ export default function Feed() {
         <MotiScrollView className="px-3" showsVerticalScrollIndicator={false}>
           <FocusAwareStatusBar />
           <Header />
-          <LinkedAccountsBar accounts={userData.linkedAccounts} />
+          <LinkedAccountsBar accounts={SUPPORTED_MARKETPLACES} />
 
           {isNewUser && <NewUserGuide />}
 
@@ -122,26 +103,37 @@ const Header = () => (
 const LinkedAccountsBar = ({
   accounts,
 }: {
-  accounts: typeof userData.linkedAccounts;
+  accounts: typeof SUPPORTED_MARKETPLACES;
 }) => (
   <View className="mb-6 flex-row items-center rounded-xl bg-white p-4 dark:bg-gray-800">
     <View className="flex-1 flex-row">
-      {accounts.map((account) => (
-        <View key={account.id} className="mr-4 items-center">
+      {accounts.map(({ id, is_linked, icon_url, is_supported, name }) => (
+        <View key={id} className="mr-4 items-center">
           <View
             className={`size-10 items-center justify-center rounded-full ${
-              account.isLinked
+              is_linked
                 ? 'bg-cyan-50 dark:bg-cyan-900'
                 : 'bg-gray-100 dark:bg-gray-700'
             }`}
           >
-            <account.icon
-              size={20}
-              color={account.isLinked ? '#0891b2' : '#94a3b8'}
-            />
+            {icon_url ? (
+              <Image
+                source={{ uri: icon_url }}
+                className="size-8 rounded-md"
+                transition={1000}
+              />
+            ) : (
+              <Store
+                size={32}
+                color={
+                  !is_supported ? '#94a3b8' : is_linked ? '#0891b2' : '#94a3b8'
+                }
+                strokeWidth={1.5}
+              />
+            )}
           </View>
           <Text className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            {account.name}
+            {name}
           </Text>
         </View>
       ))}
