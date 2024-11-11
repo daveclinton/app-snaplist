@@ -1,17 +1,21 @@
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import {
   Camera,
   ChevronRight,
   HelpCircle,
+  Loader2,
   Plus,
   Store,
 } from 'lucide-react-native';
 import { MotiScrollView } from 'moti';
 import React, { useCallback } from 'react';
-import { Alert, Linking } from 'react-native';
+import { Alert, Linking, Pressable } from 'react-native';
 
+import { useCreateUser } from '@/api/user';
 import { FeedHeader } from '@/components/feed-screen';
 import RecentListings from '@/components/recent-listings';
+import { show as showToast } from '@/components/toast';
+import { getUserSessionId } from '@/core/auth/utils';
 import { SUPPORTED_MARKETPLACES } from '@/core/constants';
 import {
   useCameraPermission,
@@ -42,10 +46,42 @@ export const userData = {
   ],
 };
 
+const useMarketplaceConnection = () => {
+  const { mutate: addUser, isPending } = useCreateUser({
+    onSuccess: () => {
+      showToast('Marketplace initiated successfully', 'success');
+      router.push('/feed/new-marketplace');
+    },
+    onError: (error) => {
+      const errorMessage =
+        error.response?.data?.message ?? 'Error adding user instance';
+      if (error.response?.status === 409) {
+        router.push('/feed/new-marketplace');
+        return;
+      }
+      showToast(errorMessage, 'error');
+    },
+  });
+
+  const handleCreateUser = async () => {
+    try {
+      const supabaseSessionId = await getUserSessionId();
+      addUser({ supabase_user_id: supabaseSessionId });
+    } catch (error) {
+      console.error('Error creating user:', error);
+      showToast('Failed to connect marketplace', 'error');
+    }
+  };
+
+  return { handleCreateUser, isPending };
+};
+
 export default function Feed() {
   const isNewUser = true;
   const { requestCameraAccessIfNeeded } = useCameraPermission();
   const { requestPhotoAccessIfNeeded } = usePhotoLibraryPermission();
+  const { handleCreateUser, isPending } = useMarketplaceConnection();
+
   const onPressTakePicture = useCallback(async () => {
     try {
       if (!(await requestCameraAccessIfNeeded())) {
@@ -55,16 +91,12 @@ export default function Feed() {
         return;
       }
       await router.push('/scan/scan');
-    } catch (err: any) {
-      // ignore
+    } catch (err) {
       Alert.alert(
         'Permissions needed',
-        `Snaplist does not have permission to access your permissions.`,
+        'Snaplist needs camera and photo access to continue',
         [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
+          { text: 'Cancel', style: 'cancel' },
           { text: 'Open Settings', onPress: () => Linking.openSettings() },
         ],
       );
@@ -77,14 +109,14 @@ export default function Feed() {
         <MotiScrollView className="px-3" showsVerticalScrollIndicator={false}>
           <FocusAwareStatusBar />
           <Header />
-          <LinkedAccountsBar accounts={SUPPORTED_MARKETPLACES} />
+          <LinkedAccountsBar
+            accounts={SUPPORTED_MARKETPLACES}
+            handleMarketplace={handleCreateUser}
+            isLoading={isPending}
+          />
 
           {isNewUser && <NewUserGuide />}
-
-          {/* Scan Button */}
           <ScanButton onPress={onPressTakePicture} />
-
-          {/* Recent Scans */}
           <RecentListings scans={userData.recentScans} viewAll />
         </MotiScrollView>
       </View>
@@ -93,7 +125,7 @@ export default function Feed() {
 }
 
 const Header = () => (
-  <View className=" mt-2 flex-row items-center justify-start">
+  <View className="mt-2 flex-row items-center justify-start">
     <Text className="text-xl text-gray-700 dark:text-gray-400">
       Connect Marketplaces
     </Text>
@@ -102,47 +134,75 @@ const Header = () => (
 
 const LinkedAccountsBar = ({
   accounts,
+  handleMarketplace,
+  isLoading = false,
 }: {
   accounts: typeof SUPPORTED_MARKETPLACES;
+  handleMarketplace: () => void;
+  isLoading?: boolean;
 }) => (
   <View className="mb-6 flex-row items-center rounded-xl bg-white p-4 dark:bg-gray-800">
     <View className="flex-1 flex-row">
       {accounts.map(({ id, is_linked, icon_url, is_supported, name }) => (
-        <View key={id} className="mr-4 items-center">
-          <View
-            className={`size-10 items-center justify-center rounded-full ${
-              is_linked
-                ? 'bg-cyan-50 dark:bg-cyan-900'
-                : 'bg-gray-100 dark:bg-gray-700'
-            }`}
-          >
-            {icon_url ? (
-              <Image
-                source={{ uri: icon_url }}
-                className="size-8 rounded-md"
-                transition={1000}
-              />
-            ) : (
-              <Store
-                size={32}
-                color={
-                  !is_supported ? '#94a3b8' : is_linked ? '#0891b2' : '#94a3b8'
-                }
-                strokeWidth={1.5}
-              />
-            )}
-          </View>
-          <Text className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            {name}
-          </Text>
-        </View>
+        <MarketplaceIcon
+          key={id}
+          isLinked={is_linked}
+          iconUrl={icon_url}
+          isSupported={is_supported}
+          name={name}
+        />
       ))}
     </View>
-    <Link href="/feed/new-marketplace" asChild>
-      <TouchableOpacity>
+    <Pressable
+      onPress={handleMarketplace}
+      disabled={isLoading}
+      className="relative"
+    >
+      {isLoading ? (
+        <Loader2 size={24} color="#006064" className="animate-spin" />
+      ) : (
         <Plus size={24} color="#006064" />
-      </TouchableOpacity>
-    </Link>
+      )}
+    </Pressable>
+  </View>
+);
+
+const MarketplaceIcon = ({
+  isLinked,
+  iconUrl,
+  isSupported,
+  name,
+}: {
+  isLinked: boolean;
+  iconUrl: string;
+  isSupported: boolean;
+  name: string;
+}) => (
+  <View className="mr-4 items-center">
+    <View
+      className={`size-10 items-center justify-center rounded-full ${
+        isLinked
+          ? 'bg-cyan-50 dark:bg-cyan-900'
+          : 'bg-gray-100 dark:bg-gray-700'
+      }`}
+    >
+      {iconUrl ? (
+        <Image
+          source={{ uri: iconUrl }}
+          className="size-8 rounded-md"
+          transition={1000}
+        />
+      ) : (
+        <Store
+          size={32}
+          color={!isSupported ? '#94a3b8' : isLinked ? '#0891b2' : '#94a3b8'}
+          strokeWidth={1.5}
+        />
+      )}
+    </View>
+    <Text className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+      {name}
+    </Text>
   </View>
 );
 

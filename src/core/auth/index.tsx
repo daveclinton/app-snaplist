@@ -2,10 +2,11 @@
 import { type SupabaseClient } from '@supabase/supabase-js';
 import { create } from 'zustand';
 
+import { show as showToast } from '@/components/toast';
+
 import { supabase } from '../supabase';
 import { createSelectors } from '../utils';
-import { getToken, removeToken, setToken } from './utils';
-import { show as showToast } from '@/components/toast';
+import { getToken, removeToken, setToken, setUserSessionId } from './utils';
 
 export type TokenType = {
   access: string;
@@ -45,7 +46,7 @@ const _useAuth = create<AuthState>((set, get) => ({
         password,
       });
 
-      console.log('Listen here', data);
+      await setUserSessionId(data.user?.id || '');
 
       if (error) throw error;
       if (!data.session) throw new Error('No session data received');

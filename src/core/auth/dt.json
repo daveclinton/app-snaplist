@@ -1,0 +1,75 @@
+{
+  "session": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsImtpZCI6IjlNTUkrY0s0eEM4M0lNTDkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL295emZwcnNmc2xleXl6YWhnaHdjLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiI3Yjc0OTZjZi01YmY5LTRiMmQtOTZhMS1mMWRlNDQyOGIyMmUiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzMxMzIzMjcwLCJpYXQiOjE3MzEzMTk2NzAsImVtYWlsIjoiY2xpbnRvbmRhdmlkNDZAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6ImNsaW50b25kYXZpZDQ2QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwicGhvbmVfdmVyaWZpZWQiOmZhbHNlLCJzdWIiOiI3Yjc0OTZjZi01YmY5LTRiMmQtOTZhMS1mMWRlNDQyOGIyMmUifSwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJhYWwiOiJhYWwxIiwiYW1yIjpbeyJtZXRob2QiOiJwYXNzd29yZCIsInRpbWVzdGFtcCI6MTczMTMxOTY3MH1dLCJzZXNzaW9uX2lkIjoiOWFmNTNiMjEtZTZmMC00Y2I5LThhYzEtNjcxZWM5MTNhNGIyIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.mzHsGFmXUYHYo6yvwfULH-bb3wSeu-Nv1NxJxSopoBw",
+    "expires_at": 1731323270,
+    "expires_in": 3600,
+    "refresh_token": "8fOWoHKCLYKPBO3OauwWtQ",
+    "token_type": "bearer",
+    "user": {
+      "app_metadata": {
+        "provider": "email",
+        "providers": ["email"]
+      },
+      "aud": "authenticated",
+      "confirmation_sent_at": "2024-11-10T19:53:17.127085Z",
+      "confirmed_at": "2024-11-10T19:54:02.481021Z",
+      "created_at": "2024-11-10T19:53:17.118088Z",
+      "email": "clintondavid46@gmail.com",
+      "email_confirmed_at": "2024-11-10T19:54:02.481021Z",
+      "id": "7b7496cf-5bf9-4b2d-96a1-f1de4428b22e",
+      "identities": [
+        {
+          "id": "identity_id",
+          "provider": "email",
+          "created_at": "2024-11-10T19:53:17.118088Z",
+          "last_sign_in_at": "2024-11-11T10:07:50.359054655Z"
+        }
+      ],
+      "is_anonymous": false,
+      "last_sign_in_at": "2024-11-11T10:07:50.359054655Z",
+      "phone": "",
+      "recovery_sent_at": "2024-11-10T20:16:25.947054Z",
+      "role": "authenticated",
+      "updated_at": "2024-11-11T10:07:50.361264Z",
+      "user_metadata": {
+        "email": "clintondavid46@gmail.com",
+        "email_verified": false,
+        "phone_verified": false,
+        "sub": "7b7496cf-5bf9-4b2d-96a1-f1de4428b22e"
+      }
+    }
+  },
+  "user": {
+    "app_metadata": {
+      "provider": "email",
+      "providers": ["email"]
+    },
+    "aud": "authenticated",
+    "confirmation_sent_at": "2024-11-10T19:53:17.127085Z",
+    "confirmed_at": "2024-11-10T19:54:02.481021Z",
+    "created_at": "2024-11-10T19:53:17.118088Z",
+    "email": "clintondavid46@gmail.com",
+    "email_confirmed_at": "2024-11-10T19:54:02.481021Z",
+    "id": "7b7496cf-5bf9-4b2d-96a1-f1de4428b22e",
+    "identities": [
+      {
+        "id": "identity_id",
+        "provider": "email",
+        "created_at": "2024-11-10T19:53:17.118088Z",
+        "last_sign_in_at": "2024-11-11T10:07:50.359054655Z"
+      }
+    ],
+    "is_anonymous": false,
+    "last_sign_in_at": "2024-11-11T10:07:50.359054655Z",
+    "phone": "",
+    "recovery_sent_at": "2024-11-10T20:16:25.947054Z",
+    "role": "authenticated",
+    "updated_at": "2024-11-11T10:07:50.361264Z",
+    "user_metadata": {
+      "email": "clintondavid46@gmail.com",
+      "email_verified": false,
+      "phone_verified": false,
+      "sub": "7b7496cf-5bf9-4b2d-96a1-f1de4428b22e"
+    }
+  }
+}
