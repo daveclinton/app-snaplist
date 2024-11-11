@@ -1,6 +1,5 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
 
 import { SignupForm, type SignupFormProps } from '@/components/signup-form';
 import { signUpWithEmail } from '@/core';
@@ -21,15 +20,16 @@ export default function Signup() {
       setIsLoading(true);
       setError(null);
       await signUpWithEmail(data.email, data.password);
-      // If sign in is successful, navigate to home
       router.push('/login');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create account');
+      console.log(
+        err instanceof Error ? err.message : 'Failed to create account',
+      );
       // Handle specific error cases
       if (err instanceof Error) {
-        Alert.alert('Sign In Failed', err.message);
+        console.log(err.message, 'error');
       } else {
-        Alert.alert('Sign In Failed', 'An unexpected error occurred');
+        console.log('Account creation failed', 'error');
       }
     } finally {
       setIsLoading(false);

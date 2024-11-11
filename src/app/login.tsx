@@ -1,10 +1,8 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert } from 'react-native';
 
 import type { LoginFormProps } from '@/components/login-form';
 import { LoginForm } from '@/components/login-form';
-import { show as showToast } from '@/components/toast';
 import { signInWithEmail } from '@/core';
 import { FocusAwareStatusBar } from '@/ui';
 
@@ -23,11 +21,10 @@ export default function Login() {
       router.replace('/(app)/');
     } catch (error) {
       if (error instanceof Error) {
-        showToast(error.message, 'error');
+        console.log(error.message, 'error');
         // Alert.alert('Sign In Failed', error.message);
       } else {
-        showToast('Sign In Failed', 'error');
-        Alert.alert('Sign In Failed', 'An unexpected error occurred');
+        console.log('Sign In Failed', 'error');
       }
     } finally {
       setIsLoading(false);

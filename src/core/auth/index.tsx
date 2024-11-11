@@ -5,6 +5,7 @@ import { create } from 'zustand';
 import { supabase } from '../supabase';
 import { createSelectors } from '../utils';
 import { getToken, removeToken, setToken } from './utils';
+import { show as showToast } from '@/components/toast';
 
 export type TokenType = {
   access: string;
@@ -61,6 +62,7 @@ const _useAuth = create<AuthState>((set, get) => ({
         status: 'authenticated',
         isAuthenticated: true,
       });
+      showToast('Successfully signed in', 'success');
     } catch (error) {
       console.error('Sign in error:', error);
       set({
@@ -68,6 +70,10 @@ const _useAuth = create<AuthState>((set, get) => ({
         token: null,
         isAuthenticated: false,
       });
+      showToast(
+        error instanceof Error ? error.message : 'Failed to sign in',
+        'error',
+      );
       throw error;
     }
   },
@@ -85,6 +91,7 @@ const _useAuth = create<AuthState>((set, get) => ({
       if (!data.user) throw new Error('No user data received');
 
       if (data.user.identities?.length === 0) {
+        showToast('Email already registered', 'warning');
         set({
           status: 'unauthenticated',
           token: null,
@@ -106,6 +113,9 @@ const _useAuth = create<AuthState>((set, get) => ({
           status: 'authenticated',
           isAuthenticated: true,
         });
+        showToast('Successfully signed up', 'success');
+      } else {
+        showToast('Please check your email to confirm your account', 'info');
       }
     } catch (error) {
       console.error('Sign up error:', error);
@@ -114,6 +124,10 @@ const _useAuth = create<AuthState>((set, get) => ({
         token: null,
         isAuthenticated: false,
       });
+      showToast(
+        error instanceof Error ? error.message : 'Failed to sign up',
+        'error',
+      );
       throw error;
     }
   },
@@ -123,7 +137,6 @@ const _useAuth = create<AuthState>((set, get) => ({
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
 
-      // Cleanup auth listener if it exists
       const { cleanup } = get();
       if (cleanup) {
         cleanup();
@@ -137,8 +150,14 @@ const _useAuth = create<AuthState>((set, get) => ({
         isAuthenticated: false,
         cleanup: null,
       });
+
+      showToast('Successfully signed out', 'success');
     } catch (error) {
       console.error('Sign out error:', error);
+      showToast(
+        error instanceof Error ? error.message : 'Failed to sign out',
+        'error',
+      );
       throw error;
     }
   },
@@ -153,8 +172,6 @@ const _useAuth = create<AuthState>((set, get) => ({
       set({ status: 'loading' });
       const storedToken = await getToken();
 
-      console.log('Is it available', storedToken);
-
       if (!storedToken) {
         set({
           status: 'unauthenticated',
@@ -164,7 +181,6 @@ const _useAuth = create<AuthState>((set, get) => ({
         return;
       }
 
-      // Map storedToken to match expected parameter shape
       const sessionToken = {
         access_token: storedToken.access,
         refresh_token: storedToken.refresh,
@@ -199,6 +215,7 @@ const _useAuth = create<AuthState>((set, get) => ({
                 status: 'authenticated',
                 isAuthenticated: true,
               });
+              showToast('Session restored', 'success');
             }
             break;
           case 'SIGNED_OUT':
@@ -217,6 +234,7 @@ const _useAuth = create<AuthState>((set, get) => ({
               };
               await setToken(token);
               set({ token });
+              showToast('Session refreshed', 'info');
             }
             break;
         }
@@ -237,6 +255,7 @@ const _useAuth = create<AuthState>((set, get) => ({
         isAuthenticated: false,
         cleanup: null,
       });
+      showToast('Session expired', 'error');
     }
   },
 }));
@@ -257,5 +276,3 @@ export const {
   signOut,
   hydrate: hydrateAuth,
 } = _useAuth.getState();
-
-
