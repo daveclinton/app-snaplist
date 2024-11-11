@@ -4,6 +4,7 @@ import { Alert } from 'react-native';
 
 import type { LoginFormProps } from '@/components/login-form';
 import { LoginForm } from '@/components/login-form';
+import { show as showToast } from '@/components/toast';
 import { signInWithEmail } from '@/core';
 import { FocusAwareStatusBar } from '@/ui';
 
@@ -21,10 +22,11 @@ export default function Login() {
       await signInWithEmail(data.email, data.password);
       router.replace('/(app)/');
     } catch (error) {
-      // Handle specific error cases
       if (error instanceof Error) {
-        Alert.alert('Sign In Failed', error.message);
+        showToast(error.message, 'error');
+        // Alert.alert('Sign In Failed', error.message);
       } else {
+        showToast('Sign In Failed', 'error');
         Alert.alert('Sign In Failed', 'An unexpected error occurred');
       }
     } finally {
