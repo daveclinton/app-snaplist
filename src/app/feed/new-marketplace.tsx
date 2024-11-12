@@ -2,24 +2,11 @@ import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { Check, Plus, Store } from 'lucide-react-native';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 
-import { SUPPORTED_MARKETPLACES } from '@/core/constants';
+import { useMarkeplaces } from '@/api/marketplaces/use-marketplaces';
+import { getUserSessionId } from '@/core/auth/utils';
 import { Button, Image, ScrollView, Text, TouchableOpacity, View } from '@/ui';
-
-interface MarketplaceConfig {
-  id: number;
-  name: string;
-  slug: string;
-  icon_url: string;
-  oauth_url: string;
-  token_url: string;
-  client_id: string;
-  client_secret: string;
-  redirect_uri: string;
-  scope: string;
-  is_supported: boolean;
-  is_linked: boolean;
-}
 
 type MarketplaceCardProps = {
   name: string;
@@ -144,110 +131,16 @@ const BottomCTA = ({ linkedCount, onContinue, loading }: BottomCTAProps) => {
 
 export default function MarketplaceOAuthScreen() {
   const [loading, setLoading] = React.useState(false);
-  const [connectedMarketplaces, setConnectedMarketplaces] = React.useState<
-    string[]
-  >([]);
+  const [connectedMarketplaces] = React.useState<string[]>([]);
   const [error, setError] = React.useState<string | null>(null);
 
-  const exchangeCodeForToken = async ({
-    code,
-    marketplaceId,
-  }: {
-    code: string;
-    marketplaceId: number;
-  }) => {
-    const marketplace = SUPPORTED_MARKETPLACES.find(
-      (m) => m.id === marketplaceId,
-    );
-    if (!marketplace) return;
-
-    try {
-      const response = await fetch(marketplace.token_url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code,
-          client_id: marketplace.client_id,
-          client_secret: marketplace.client_secret,
-          redirect_uri: marketplace.redirect_uri,
-          grant_type: 'authorization_code',
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to exchange code for token');
-      }
-
-      // Update connected marketplaces
-      setConnectedMarketplaces((prev) => [...prev, marketplace.slug]);
-
-      // Store tokens securely here
-      // You might want to use SecureStore or similar
-    } catch (error) {
-      console.error('Token Exchange Error:', error);
-      setError('Failed to complete marketplace connection');
-      throw error;
-    }
-  };
-
-  const initiateOAuth = async (marketplace: MarketplaceConfig) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Generate state with marketplace ID
-      const stateValue = btoa(
-        JSON.stringify({ marketplaceId: marketplace.id }),
-      );
-
-      const params = new URLSearchParams({
-        client_id: marketplace.client_id,
-        redirect_uri: marketplace.redirect_uri,
-        scope: marketplace.scope,
-        response_type: 'code',
-        state: stateValue,
-      });
-
-      const authUrl = `${marketplace.oauth_url}?${params.toString()}`;
-
-      const result = await WebBrowser.openAuthSessionAsync(
-        authUrl,
-        marketplace.redirect_uri,
-      );
-
-      if (result.type === 'success' && result.url) {
-        const responseUrl = new URL(result.url);
-        const code = responseUrl.searchParams.get('code');
-        const returnedState = responseUrl.searchParams.get('state');
-
-        if (returnedState !== stateValue) {
-          throw new Error('State mismatch - possible security issue');
-        }
-
-        if (code) {
-          const { marketplaceId } = JSON.parse(atob(returnedState));
-          await exchangeCodeForToken({ code, marketplaceId });
-        }
-      } else if (result.type === 'cancel') {
-        // User cancelled the authentication
-        console.log('Authentication cancelled by user');
-      }
-    } catch (error) {
-      console.error('OAuth Error:', error);
-      setError('Failed to connect to marketplace');
-    } finally {
-      setLoading(false);
-    }
+  const initiateOAuth = async (authUrl: string) => {
+    await WebBrowser.openAuthSessionAsync(authUrl);
   };
 
   const handleContinue = async () => {
     setLoading(true);
     try {
-      // Here you might want to do any final setup before proceeding
       router.back();
     } catch (error) {
       console.error('Continue Error:', error);
@@ -256,6 +149,39 @@ export default function MarketplaceOAuthScreen() {
       setLoading(false);
     }
   };
+
+  const [userSupabaseId, setUserSupabaseId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSessionId = async () => {
+      const sessionId = await getUserSessionId();
+      setUserSupabaseId(sessionId);
+    };
+    fetchSessionId();
+  }, []);
+
+  const { data, isPending, isError } = useMarkeplaces({
+    //@ts-ignore
+    variables: { userSupabaseId: userSupabaseId },
+  });
+
+  console.log(data, isPending, isError);
+
+  if (isPending) {
+    return (
+      <View className="flex-1 bg-white dark:bg-gray-900">
+        <Text>Pending</Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View className="flex-1 bg-white dark:bg-gray-900">
+        <Text>Error</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-white dark:bg-gray-900">
@@ -273,8 +199,7 @@ export default function MarketplaceOAuthScreen() {
 
         <View className="mb-4 flex-row items-center rounded-lg bg-cyan-50 p-3 dark:bg-cyan-900">
           <Text className="font-medium text-cyan-700 dark:text-cyan-200">
-            {connectedMarketplaces.length} of {SUPPORTED_MARKETPLACES.length}{' '}
-            Linked
+            {connectedMarketplaces.length} of {data.length} Linked
           </Text>
         </View>
 
@@ -285,14 +210,14 @@ export default function MarketplaceOAuthScreen() {
         )}
 
         <View className="flex-row flex-wrap justify-between">
-          {SUPPORTED_MARKETPLACES.map((marketplace) => (
+          {data.map((marketplace) => (
             <MarketplaceCard
               key={marketplace.id}
               name={marketplace.name}
               iconUrl={marketplace.icon_url}
               isLinked={connectedMarketplaces.includes(marketplace.slug)}
               isSupported={marketplace.is_supported}
-              onPress={() => initiateOAuth(marketplace)}
+              onPress={() => initiateOAuth(marketplace.oauth_url)}
             />
           ))}
         </View>

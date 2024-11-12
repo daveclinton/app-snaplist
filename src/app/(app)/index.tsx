@@ -53,13 +53,11 @@ const useMarketplaceConnection = () => {
       router.push('/feed/new-marketplace');
     },
     onError: (error) => {
-      const errorMessage =
-        error.response?.data?.message ?? 'Error adding user instance';
       if (error.response?.status === 409) {
         router.push('/feed/new-marketplace');
         return;
       }
-      showToast(errorMessage, 'error');
+      showToast('Error adding user instance', 'error');
     },
   });
 
