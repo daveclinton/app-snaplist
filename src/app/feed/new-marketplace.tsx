@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { Check, Plus, Store } from 'lucide-react-native';
 import * as React from 'react';
@@ -166,6 +166,12 @@ export default function MarketplaceOAuthScreen() {
   });
 
   console.log(data, isPending, isError);
+
+  const params = useLocalSearchParams();
+
+  useEffect(() => {
+    console.log('New Marketplace Page - Params:', params);
+  }, [params]);
 
   if (isPending) {
     return (
