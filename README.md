@@ -71,3 +71,5 @@ Redirect URLs:
 
 - com.snaplist://auth/callback
 - [Your production domain]/auth/callback
+
+com.snaplist://feed/new-marketplace?marketplace=ebay&connection=success
