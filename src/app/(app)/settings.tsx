@@ -4,26 +4,27 @@ import { Env } from '@env';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
 
+import { hideLoader, showLoader } from '@/components/loader';
 import { Item } from '@/components/settings/item';
 import { ItemsContainer } from '@/components/settings/items-container';
 import { LanguageItem } from '@/components/settings/language-item';
 import { ThemeItem } from '@/components/settings/theme-item';
-import { signOut, translate, useIsFirstTime } from '@/core';
+import { signOut, translate } from '@/core';
 import { colors, FocusAwareStatusBar, ScrollView, Text, View } from '@/ui';
 import { Github, Rate, Share, Support, Website } from '@/ui/icons';
 
 export default function Settings() {
   const { colorScheme } = useColorScheme();
   const [, setLoading] = React.useState(false);
-  const [_, setIsFirstTime] = useIsFirstTime();
   const handleSignOut = async () => {
     try {
-      setIsFirstTime(true);
+      showLoader();
       setLoading(true);
       await signOut();
     } catch (error) {
       console.error('Failed to sign out:', error);
     } finally {
+      hideLoader();
       setLoading(false);
     }
   };

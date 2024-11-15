@@ -1,4 +1,3 @@
-// Import  global CSS file
 import '../../global.css';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';

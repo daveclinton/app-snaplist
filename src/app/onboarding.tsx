@@ -3,7 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import LottieView from 'lottie-react-native';
 import { useColorScheme } from 'nativewind';
 import React, { useRef } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useIsFirstTime } from '@/core';
 import { Button, SafeAreaView, Text, View } from '@/ui';
@@ -13,7 +12,7 @@ const OnboardingScreen = () => {
   const isDark = colorScheme === 'dark';
   const [_, setIsFirstTime] = useIsFirstTime();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
+
   const animation = useRef<LottieView>(null);
 
   return (
