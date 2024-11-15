@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-// Loader.tsx
 import LottieView from 'lottie-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -7,11 +6,10 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import RootSiblings from 'react-native-root-siblings';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Make sure RootSiblings container exists
 let loaderInstance: RootSiblings | null = null;
 let activeTimeoutId: NodeJS.Timeout | null = null;
 
-const LOADER_TIMEOUT = 30000; // 30 seconds maximum display time
+const LOADER_TIMEOUT = 30000;
 
 const createLoader = () => {
   return new Promise<RootSiblings>((resolve) => {
@@ -29,14 +27,10 @@ const createLoader = () => {
 
 export const showLoader = async () => {
   if (process.env.NODE_ENV === 'test') return;
-
-  // Clean up existing loader
   hideLoader();
 
   try {
     loaderInstance = await createLoader();
-
-    // Safety timeout
     activeTimeoutId = setTimeout(() => {
       hideLoader();
     }, LOADER_TIMEOUT);
@@ -85,7 +79,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1f2937',
   },
   lottieContainer: {
-    width: 64, // size-16
+    width: 64,
     height: 64,
     justifyContent: 'center',
     alignItems: 'center',
@@ -106,27 +100,19 @@ function Loader({ onRef }: LoaderProps) {
     if (onRef) {
       onRef(animation.current);
     }
-
-    // Start animation when component mounts
     if (animation.current) {
       animation.current.play();
     }
 
     return () => {
       isMounted.current = false;
-
-      // Reset animation
       if (animation.current) {
         animation.current.reset();
       }
-
-      // Clean up timeout
       if (activeTimeoutId) {
         clearTimeout(activeTimeoutId);
         activeTimeoutId = null;
       }
-
-      // Ensure loader instance is destroyed
       if (loaderInstance) {
         hideLoader();
       }
@@ -140,11 +126,7 @@ function Loader({ onRef }: LoaderProps) {
       <Animated.View
         entering={FadeIn.duration(200)}
         exiting={FadeOut.duration(200)}
-        style={[
-          styles.container,
-          { marginTop: top },
-          // Add dark mode styles conditionally based on your theme implementation
-        ]}
+        style={[styles.container, { marginTop: top }]}
       >
         <View style={styles.lottieContainer}>
           <LottieView
