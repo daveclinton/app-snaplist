@@ -31,7 +31,6 @@ export function redirectSystemPath({
           return `/feed/new-marketplace?marketplace=${marketplace}&connection=${connection}`;
         }
       }
-
       return redirectedPath;
     }
 

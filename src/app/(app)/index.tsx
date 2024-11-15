@@ -21,6 +21,7 @@ import {
   useCameraPermission,
   usePhotoLibraryPermission,
 } from '@/core/hooks/use-permissions';
+import { useInitiated } from '@/core/hooks/user-initiated';
 import { FocusAwareStatusBar, Image, Text, TouchableOpacity, View } from '@/ui';
 
 export const userData = {
@@ -47,6 +48,7 @@ export const userData = {
 };
 
 const useMarketplaceConnection = () => {
+  const [isInitiated, setIsInitated] = useInitiated();
   const { mutate: addUser, isPending } = useCreateUser({
     onSuccess: () => {
       showToast('Marketplace initiated successfully', 'success');
@@ -62,9 +64,13 @@ const useMarketplaceConnection = () => {
   });
 
   const handleCreateUser = async () => {
+    if (isInitiated) {
+      return router.push('/feed/new-marketplace');
+    }
     try {
       const supabaseSessionId = await getUserSessionId();
-      addUser({ supabase_user_id: supabaseSessionId });
+      await addUser({ supabase_user_id: supabaseSessionId });
+      await setIsInitated(true);
     } catch (error) {
       console.error('Error creating user:', error);
       showToast('Failed to connect marketplace', 'error');

@@ -165,8 +165,6 @@ export default function MarketplaceOAuthScreen() {
     variables: { userSupabaseId: userSupabaseId },
   });
 
-  console.log(data, isPending, isError);
-
   const params = useLocalSearchParams();
 
   useEffect(() => {
