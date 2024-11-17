@@ -1,7 +1,7 @@
 import { type AxiosError } from 'axios';
 import { createQuery } from 'react-query-kit';
 
-import { client } from '../common';
+import { client, queryClient } from '../common';
 
 interface QueryVariables {
   userSupabaseId: string;
@@ -24,6 +24,10 @@ type Marketplace = {
 
 type MarketplacesResponse = Marketplace[];
 
+export const invalidateMarketplaces = () => {
+  return queryClient.invalidateQueries({ queryKey: ['marketplaces'] });
+};
+
 export const useMarkeplaces = createQuery<
   MarketplacesResponse,
   QueryVariables,
@@ -35,4 +39,5 @@ export const useMarkeplaces = createQuery<
       .get(`marketplaces/${userSupabaseId}`)
       .then((response) => response.data);
   },
+  refetchOnMount: 'always',
 });

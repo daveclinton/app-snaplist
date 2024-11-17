@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { Check, Plus, Store } from 'lucide-react-native';
 import * as React from 'react';
@@ -161,14 +161,25 @@ export default function MarketplaceOAuthScreen() {
   const [error, setError] = React.useState<string | null>(null);
   const [userSupabaseId, setUserSupabaseId] = useState<string | null>(null);
 
-  const { data, isPending, isError } = useMarkeplaces({
-    //@ts-ignore
-    variables: { userSupabaseId: userSupabaseId },
+  // const { data, isPending, isError } = useMarkeplaces({
+  //   //@ts-ignore
+  //   variables: { userSupabaseId: userSupabaseId },
+  // });
+
+  const { data, isPending, isError, refetch } = useMarkeplaces({
+    variables: { userSupabaseId: userSupabaseId! },
+    enabled: !!userSupabaseId,
   });
 
   const params = useLocalSearchParams();
 
-  console.log(data);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (params?.status === 'success') {
+        refetch();
+      }
+    }, [params?.status, refetch]),
+  );
 
   useEffect(() => {
     const fetchSessionId = async () => {
