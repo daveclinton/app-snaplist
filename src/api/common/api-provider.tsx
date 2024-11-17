@@ -4,34 +4,37 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
+import { useFocusEffect } from 'expo-router';
 import * as React from 'react';
-import { useEffect } from 'react';
-import { AppState, type AppStateStatus } from 'react-native';
+import { useCallback } from 'react';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: true,
-      staleTime: 1000 * 60 * 5,
+      refetchOnReconnect: true,
+      refetchOnMount: true,
       retry: 2,
+      staleTime: 1000 * 60 * 0.2,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+    mutations: {
+      retry: 1,
     },
   },
 });
 
-function onAppStateChange(status: AppStateStatus) {
-  focusManager.setFocused(status === 'active');
-}
-
 export function APIProvider({ children }: { children: React.ReactNode }) {
   useReactQueryDevTools(queryClient);
+  useFocusEffect(
+    useCallback(() => {
+      focusManager.setFocused(true);
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', onAppStateChange);
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
+      return () => {
+        focusManager.setFocused(false);
+      };
+    }, []),
+  );
 
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

@@ -32,6 +32,12 @@ const MarketplaceCard = ({ marketplace, onPress }: MarketplaceCardProps) => {
   const { marketplace: details, connectionStatus } = marketplace;
   const isLinked = connectionStatus === 'ACTIVE';
 
+  const isNotLinked = connectionStatus === 'DISCONNECTED';
+
+  const handleManage = () => {
+    return router.push('/(app)/settings');
+  };
+
   return (
     <View className="mb-4 w-[48%] rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800">
       <View className="items-center">
@@ -90,7 +96,7 @@ const MarketplaceCard = ({ marketplace, onPress }: MarketplaceCardProps) => {
         </View>
 
         <TouchableOpacity
-          onPress={details.is_supported ? onPress : undefined}
+          onPress={details.is_supported && isNotLinked ? onPress : handleManage}
           className={`w-full flex-row items-center justify-center rounded-lg px-4 py-2 ${
             !details.is_supported
               ? 'bg-gray-100 dark:bg-gray-700'
