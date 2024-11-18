@@ -1,6 +1,6 @@
-// app/components/FeedHeader.tsx
 import { MaterialIcons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
+import { Camera, Search } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
 import { Animated, Pressable, StyleSheet } from 'react-native';
@@ -73,13 +73,6 @@ export const FeedHeader = ({
               </Text>
             </View>
             <View style={styles.actionsContainer}>
-              {/* <Pressable style={styles.actionButton}>
-                <MaterialIcons
-                  name="notifications-none"
-                  size={24}
-                  color={isDark ? '#FFFFFF' : '#000000'}
-                />
-              </Pressable> */}
               <Link asChild href="/feed/new-marketplace">
                 <Pressable style={styles.actionButton}>
                   <MaterialIcons
@@ -95,33 +88,41 @@ export const FeedHeader = ({
           <Animated.View
             style={[styles.searchContainer, { top: searchBarTop }]}
           >
-            <Pressable
-              onPress={onCameraOpen}
-              style={[
-                styles.searchBar,
-                {
-                  backgroundColor: isDark ? '#374151' : '#f3f4f6',
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.searchPrompt,
-                  {
-                    color: isDark ? '#9CA3AF' : '#6B7280',
-                  },
-                ]}
+            <View className="w-full bg-transparent px-4">
+              <View
+                className={`flex-row items-center rounded-xl ${isDark ? 'bg-gray-700' : 'bg-gray-100'} px-4 py-2`}
               >
-                Click camera to search
-              </Text>
-              <View style={styles.actionButton}>
-                <MaterialIcons
-                  name="camera-alt"
-                  size={24}
-                  color={isDark ? '#9CA3AF' : '#6B7280'}
+                <Search
+                  width={20}
+                  height={20}
+                  color={isDark ? '#9CA3AF' : '#0891b2'}
                 />
+                <Pressable
+                  onPress={() => router.push('/(app)/search')}
+                  className="flex-1"
+                >
+                  <Text
+                    className={`mx-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}
+                    numberOfLines={1}
+                  >
+                    Search on Snaplist
+                  </Text>
+                </Pressable>
+                <View className="flex-row gap-2">
+                  <Pressable
+                    onPress={onCameraOpen}
+                    className="p-2"
+                    accessibilityLabel="Image search"
+                  >
+                    <Camera
+                      width={20}
+                      height={20}
+                      color={isDark ? '#9CA3AF' : '#0891b2'}
+                    />
+                  </Pressable>
+                </View>
               </View>
-            </Pressable>
+            </View>
           </Animated.View>
         </Animated.View>
 
@@ -198,18 +199,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    paddingHorizontal: 16,
-  },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 10,
-    padding: 8,
-    justifyContent: 'space-between',
-  },
-  searchPrompt: {
-    fontSize: 16,
-    marginLeft: 8,
   },
   scrollView: {
     flex: 1,

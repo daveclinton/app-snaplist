@@ -87,6 +87,7 @@ export default function Feed() {
   const { handleCreateUser, isPending } = useMarketplaceConnection();
 
   const onPressTakePicture = useCallback(async () => {
+    console.log('Here');
     try {
       if (!(await requestCameraAccessIfNeeded())) {
         return;

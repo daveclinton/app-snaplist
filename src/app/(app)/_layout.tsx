@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
-import { ListPlus } from 'lucide-react-native';
+import { ListPlus, SearchIcon } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import React, { useCallback, useEffect } from 'react';
 
@@ -60,6 +60,15 @@ export default function TabLayout() {
           headerShown: false,
           tabBarIcon: ({ color }) => <ListPlus color={color} />,
           tabBarTestID: 'style-tab',
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Product Search',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <SearchIcon color={color} />,
+          tabBarTestID: 'settings-tab',
         }}
       />
       <Tabs.Screen
