@@ -53,6 +53,7 @@ const useMarketplaceConnection = () => {
     onSuccess: () => {
       showToast('Marketplace initiated successfully', 'success');
       router.push('/feed/new-marketplace');
+      setIsInitated(true);
     },
     onError: (error) => {
       if (error.response?.status === 409) {
@@ -70,7 +71,6 @@ const useMarketplaceConnection = () => {
     try {
       const supabaseSessionId = await getUserSessionId();
       await addUser({ supabase_user_id: supabaseSessionId });
-      await setIsInitated(true);
     } catch (error) {
       console.error('Error creating user:', error);
       showToast('Failed to connect marketplace', 'error');
