@@ -7,10 +7,11 @@ import {
   TextInput,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Pressable,
 } from 'react-native';
 import debounce from 'lodash/debounce';
 
-import { Image, Pressable, SafeAreaView, Text, View } from '@/ui';
+import { Image, SafeAreaView, Text, View } from '@/ui';
 import { useImageSearch } from '@/api/products/use-search';
 
 interface Product {
@@ -106,10 +107,27 @@ const SearchBar: React.FC<SearchBarProps> = ({
   );
 };
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handlePress = useCallback(() => {
-    onPress?.(product);
-  }, [product, onPress]);
+    const encodedProduct = encodeURIComponent(
+      JSON.stringify({
+        id: product.id,
+        title: product.title,
+        price: '$100',
+        imageUrl: product.images[0],
+        description: product.description,
+        source: 'Google',
+      }),
+    );
+
+    router.push({
+      pathname: '/feed/[id]',
+      params: {
+        id: product.id,
+        productData: encodedProduct,
+      },
+    });
+  }, [product]);
 
   return (
     <Pressable
@@ -170,10 +188,6 @@ const SearchResults: React.FC = () => {
   const handleSearch = useCallback((term: string) => {
     setSearchTerm(term);
     setPage(1);
-  }, []);
-
-  const handleProductPress = useCallback((product: Product) => {
-    router.push(`/product/${product.id}`);
   }, []);
 
   const handleLoadMore = useCallback(() => {
@@ -240,11 +254,7 @@ const SearchResults: React.FC = () => {
       >
         <View className="p-4">
           {data?.products.map((product) => (
-            <ProductCard
-              key={product?.id}
-              product={product}
-              onPress={handleProductPress}
-            />
+            <ProductCard key={product?.id} product={product} />
           ))}
         </View>
       </ScrollView>
