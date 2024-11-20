@@ -1,18 +1,18 @@
 import { router } from 'expo-router';
+import debounce from 'lodash/debounce';
 import { AlertCircle, ArrowBigLeftIcon, Camera } from 'lucide-react-native';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  Pressable,
   ScrollView,
   TextInput,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-  Pressable,
 } from 'react-native';
-import debounce from 'lodash/debounce';
 
-import { Image, SafeAreaView, Text, View } from '@/ui';
 import { useImageSearch } from '@/api/products/use-search';
+import { Image, SafeAreaView, Text, View } from '@/ui';
 
 interface Product {
   id: string;
@@ -31,27 +31,6 @@ interface SearchBarProps {
 interface ProductCardProps {
   product: Product;
   onPress?: (product: Product) => void;
-}
-
-interface SearchResponse {
-  products: Product[];
-  totalResults: number;
-  page: number;
-  totalPages: number;
-}
-
-interface ImageSearchVariables {
-  query: string;
-  limit: number;
-  page: number;
-}
-
-interface UseImageSearchResult {
-  data?: SearchResponse;
-  isLoading: boolean;
-  error?: Error;
-  refetch: () => void;
-  isFetching: boolean;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
