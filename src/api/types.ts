@@ -35,7 +35,8 @@ type ReturnsData = {
 export type ListingFormData = {
   title: string;
   description: string;
-  category: string;
+  categoryId: string; // eBay category ID
+  categoryName: string; // Category name for internal use
   condition: string;
   price: string;
   pictures: string[];

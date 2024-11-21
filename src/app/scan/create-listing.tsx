@@ -32,7 +32,7 @@ const STEPS = [
       const errors: Record<string, string> = {};
       if (!data.title) errors.title = 'Title is required';
       if (!data.description) errors.description = 'Description is required';
-      if (!data.category) errors.category = 'Category is required';
+      if (!data.categoryId) errors.category = 'Category is required';
       if (!data.condition) errors.condition = 'Condition is required';
       return errors;
     },
@@ -88,7 +88,8 @@ const createListingPayload = (formData: ListingFormData) => ({
   Item: {
     Title: formData.title,
     Description: formData.description,
-    PrimaryCategory: { CategoryID: formData.category },
+    PrimaryCategory: { CategoryID: formData.categoryId },
+    CategoryName: formData.categoryName,
     StartPrice: parseFloat(formData.price),
     CategoryMappingAllowed: true,
     Country: 'US',

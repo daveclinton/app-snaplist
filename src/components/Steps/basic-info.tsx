@@ -6,7 +6,7 @@ import { type OptionType, Select } from '@/ui/select';
 
 interface BasicInfoFormProps {
   formData: ListingFormData;
-  updateForm: (field: keyof ListingFormData, value: string) => void;
+  updateForm: (field: keyof ListingFormData, value: string | number) => void;
   errors: Record<string, string>;
 }
 
@@ -20,6 +20,8 @@ const CONDITIONS: OptionType[] = [
 
 const CATEGORIES: OptionType[] = [
   { value: '29223', label: 'Books & Magazines' },
+  { value: '12345', label: 'Smartphones' },
+  { value: '98765', label: 'Laptops' },
 ] as const;
 
 const FormField = ({
@@ -81,14 +83,22 @@ export default function BasicInfoForm({
           placeholder="Describe the book's condition, edition, and any notable features"
           multiline
           textAlignVertical="top"
-          maxLength={5000}
+          maxLength={8000}
         />
       </FormField>
 
       <FormField label="Category" error={errors.category}>
         <Select
-          value={formData.category}
-          onSelect={handleUpdate('category')}
+          value={formData.categoryId}
+          onSelect={(value: string | number) => {
+            const selectedCategory = CATEGORIES.find(
+              (category) => category.value === value,
+            );
+            if (selectedCategory) {
+              updateForm('categoryId', selectedCategory.value);
+              updateForm('categoryName', selectedCategory.label);
+            }
+          }}
           options={CATEGORIES}
           placeholder="Select book category"
           error={errors.category}
