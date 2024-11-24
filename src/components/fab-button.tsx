@@ -2,12 +2,15 @@ import { router } from 'expo-router';
 import { CameraIcon, PlusCircle, Search } from 'lucide-react-native';
 import React from 'react';
 import {
+  Alert,
   Dimensions,
+  Linking,
   Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
+import * as ImagePicker from 'react-native-image-crop-picker';
 import Animated, {
   Easing,
   Extrapolation,
@@ -19,6 +22,13 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+
+import { useCameraPermission } from '@/core/hooks/use-permissions';
+
+type ImagePickerError = {
+  code: string;
+  message: string;
+};
 
 const { height, width } = Dimensions.get('window');
 
@@ -36,6 +46,7 @@ const FAB = () => {
   const progress = useDerivedValue(() =>
     isOpen.value ? withTiming(1) : withTiming(0),
   );
+  const { requestCameraAccessIfNeeded } = useCameraPermission();
 
   const handlePress = () => {
     const config = {
@@ -104,6 +115,46 @@ const FAB = () => {
       params: { initialData: encodedInitialData },
     });
     isOpen.value = !isOpen.value;
+  };
+
+  const handleImageSelection = async (image: ImagePicker.Image) => {
+    const encodedUri = await encodeURIComponent(image.path);
+    await router.push(`/scan/${encodedUri}`);
+  };
+  const handleError = (error: unknown) => {
+    const isImagePickerError = (err: unknown): err is ImagePickerError => {
+      return typeof err === 'object' && err !== null && 'code' in err;
+    };
+
+    if (isImagePickerError(error) && error.code !== 'E_PICKER_CANCELLED') {
+      Alert.alert(
+        'Permissions needed',
+        'Snaplist needs camera and photo access to continue',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        ],
+      );
+    }
+  };
+
+  const openCamera = async () => {
+    const hasPermission = await requestCameraAccessIfNeeded();
+    if (!hasPermission) return;
+
+    try {
+      const image = await ImagePicker.openCamera({
+        width: 1200,
+        height: 1200,
+        cropping: true,
+        mediaType: 'photo',
+        compressImageQuality: 0.8,
+      });
+
+      handleImageSelection(image);
+    } catch (error) {
+      handleError(error);
+    }
   };
 
   const opacityText = useAnimatedStyle(() => {
@@ -189,7 +240,7 @@ const FAB = () => {
       </AnimatedTouchable>
       <AnimatedTouchable
         onPress={() => {
-          router.push('/scan/scan');
+          openCamera();
           isOpen.value = !isOpen.value;
         }}
         style={[styles.contentContainer, secondIcon, secondWidthStyle]}
