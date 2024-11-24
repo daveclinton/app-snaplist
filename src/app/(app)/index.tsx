@@ -4,7 +4,6 @@ import React, { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 
 import { useCreateUser } from '@/api/user';
-import FAB from '@/components/fab-button';
 import { FeedHeader } from '@/components/feed-screen';
 import { CustomHeader } from '@/components/header';
 import { LinkedAccountsBar } from '@/components/link-accounts';
@@ -14,35 +13,13 @@ import { ScanButton } from '@/components/scan-button';
 import { show as showToast } from '@/components/toast';
 import { getUserSessionId } from '@/core/auth/utils';
 import { SUPPORTED_MARKETPLACES } from '@/core/constants';
+import { userData } from '@/core/data';
 import {
   useCameraPermission,
   usePhotoLibraryPermission,
 } from '@/core/hooks/use-permissions';
 import { useInitiated } from '@/core/hooks/user-initiated';
 import { FocusAwareStatusBar, View } from '@/ui';
-
-export const userData = {
-  name: 'John',
-  notifications: 3,
-  recentScans: [
-    {
-      id: 1,
-      name: 'Vintage Camera',
-      image: '/placeholder-image.jpg',
-      description: 'Retro film camera in excellent condition',
-      postedOn: ['eBay', 'Facebook'],
-      date: '2h ago',
-    },
-    {
-      id: 2,
-      name: 'Gaming Console',
-      image: '/placeholder-image.jpg',
-      description: 'Latest generation gaming system',
-      postedOn: ['Facebook'],
-      date: '5h ago',
-    },
-  ],
-};
 
 const useMarketplaceConnection = () => {
   const [isInitiated, setIsInitated] = useInitiated();
@@ -107,7 +84,7 @@ export default function Feed() {
 
   return (
     <FeedHeader onCameraOpen={onPressTakePicture}>
-      <View className="flex-1 bg-white px-4 dark:bg-gray-900">
+      <View className="relative flex-1 bg-white px-4 dark:bg-gray-900">
         <MotiScrollView className="px-3" showsVerticalScrollIndicator={false}>
           <FocusAwareStatusBar />
           <CustomHeader />
@@ -120,7 +97,6 @@ export default function Feed() {
           {isNewUser && <NewUserGuide />}
           <ScanButton onPress={onPressTakePicture} />
           <RecentListings scans={userData.recentScans} viewAll />
-          <FAB />
         </MotiScrollView>
       </View>
     </FeedHeader>

@@ -1,6 +1,6 @@
 import { ChevronRight, Store } from 'lucide-react-native';
 
-import { type userData } from '@/app/(app)';
+import { type userData } from '@/core/data';
 import { Text, TouchableOpacity, View } from '@/ui';
 
 const RecentListings = ({

@@ -1,7 +1,13 @@
 import { router } from 'expo-router';
 import { CameraIcon, PlusCircle, Search } from 'lucide-react-native';
 import React from 'react';
-import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Animated, {
   Easing,
   Extrapolation,
@@ -13,6 +19,8 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+
+const { height, width } = Dimensions.get('window');
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -168,7 +176,7 @@ const FAB = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <View>
       <AnimatedTouchable
         onPress={handleCreateListing}
         style={[styles.contentContainer, thirdIcon, thirdWidthStyle]}
@@ -213,19 +221,21 @@ const FAB = () => {
 export default FAB;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   contentContainer: {
     zIndex: 1000,
     backgroundColor: '#00BCD4',
     position: 'absolute',
-    bottom: 30,
-    right: 30,
+    bottom: height * 0.025,
+    right: width * 0.025,
     borderRadius: 50,
     flexDirection: 'row',
     alignItems: 'center',
     overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   iconContainer: {
     width: 60,

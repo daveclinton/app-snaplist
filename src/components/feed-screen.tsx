@@ -8,6 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { FocusAwareStatusBar, Text, View } from '@/ui';
 
+import FAB from './fab-button';
+
 const HEADER_HEIGHT = 120;
 const COLLAPSED_HEIGHT = 60;
 
@@ -125,7 +127,6 @@ export const FeedHeader = ({
             </View>
           </Animated.View>
         </Animated.View>
-
         <Animated.ScrollView
           onScroll={Animated.event(
             [{ nativeEvent: { contentOffset: { y: scrollY } } }],
@@ -141,6 +142,7 @@ export const FeedHeader = ({
         >
           <View style={{ marginTop: HEADER_HEIGHT }}>{children}</View>
         </Animated.ScrollView>
+        <FAB />
       </View>
     </SafeAreaView>
   );

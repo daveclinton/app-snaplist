@@ -11,7 +11,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { RootSiblingParent } from 'react-native-root-siblings';
 
 import { APIProvider } from '@/api';
-import { hydrateAuth, loadSelectedTheme } from '@/core';
+import { hydrateAuth, loadSelectedTheme, useSelectedTheme } from '@/core';
 import { verifySupabaseConnection } from '@/core/supabase';
 import { useThemeConfig } from '@/core/use-theme-config';
 
@@ -41,6 +41,7 @@ export default function RootLayout() {
 
 function Providers({ children }: { children: React.ReactNode }) {
   const theme = useThemeConfig();
+  const { setSelectedTheme } = useSelectedTheme();
   useEffect(() => {
     const checkConnection = async () => {
       const result = await verifySupabaseConnection();
@@ -48,6 +49,10 @@ function Providers({ children }: { children: React.ReactNode }) {
     };
 
     checkConnection();
+  }, []);
+
+  useEffect(() => {
+    setSelectedTheme('light');
   }, []);
   return (
     <GestureHandlerRootView

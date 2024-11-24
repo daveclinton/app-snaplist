@@ -1,9 +1,8 @@
 import * as React from 'react';
 
 import RecentListings from '@/components/recent-listings';
+import { userData } from '@/core/data';
 import { FocusAwareStatusBar, SafeAreaView, ScrollView } from '@/ui';
-
-import { userData } from '.';
 
 export default function Style() {
   return (

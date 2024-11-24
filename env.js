@@ -84,8 +84,6 @@ const client = z.object({
   VAR_BOOL: z.boolean(),
   NEXT_PUBLIC_SUPABASE_URL: z.string(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
-  EBAY_CLIENT_ID: z.string(),
-  EBAY_CLIENT_SECRET: z.string(),
   APP_URL: z.string(),
 });
 
@@ -113,8 +111,6 @@ const _clientEnv = {
   VAR_BOOL: process.env.VAR_BOOL === 'true',
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  EBAY_CLIENT_ID: process.env.EBAY_CLIENT_ID,
-  EBAY_CLIENT_SECRET: process.env.EBAY_CLIENT_SECRET,
   APP_URL: process.env.APP_URL,
 };
 
