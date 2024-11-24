@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
 import { ListPlus, SearchIcon } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
@@ -21,9 +20,6 @@ export default function TabLayout() {
     }
   }, [hideSplash, status]);
 
-  console.log('IsFirstTime', isFirstTime);
-
-  console.log('Status', status);
   const { colorScheme } = useColorScheme();
 
   if (isFirstTime) {
