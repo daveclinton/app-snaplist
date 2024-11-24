@@ -113,6 +113,7 @@ export const LoginForm = ({
           onPress={handleSubmit(onSubmit)}
           disabled={isLoading}
           loading={isLoading}
+          className="h-12"
         />
         <Pressable onPress={resetPassword}>
           <Text className="text-center text-sm text-primary-600">

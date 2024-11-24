@@ -112,6 +112,7 @@ export const SignupForm = ({
             onPress={handleSubmit(onSubmit)}
             disabled={isLoading}
             loading={isLoading}
+            className="h-12"
           />
 
           <View className="mt-4 flex-row justify-center space-x-1">

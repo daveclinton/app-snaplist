@@ -18,60 +18,47 @@ const OnboardingScreen = () => {
   return (
     <SafeAreaView className={`flex-1 bg-white dark:bg-gray-900`}>
       <StatusBar style={isDark ? 'light' : 'dark'} />
-
-      <View className="absolute inset-0 opacity-5">
-        <View className="flex-1 flex-row flex-wrap">
-          {[...Array(100)].map((_, i) => (
-            <View
-              key={i}
-              className="size-8 border border-gray-200 dark:border-gray-700"
-            />
-          ))}
+      <View className="mt-6 flex-[0.3] items-center justify-center px-6">
+        <View className=" size-64 items-center justify-center">
+          <LottieView
+            autoPlay
+            ref={animation}
+            style={{
+              width: '100%',
+              flex: 1,
+            }}
+            source={require('../../assets/onboarding.json')}
+          />
         </View>
       </View>
 
-      <View className="flex-1">
-        <View className="mt-6 flex-[0.3] items-center justify-center px-6">
-          <View className="size-72 items-center justify-center">
-            <LottieView
-              autoPlay
-              ref={animation}
-              style={{
-                width: '100%',
-                flex: 1,
-              }}
-              source={require('../../assets/onboarding.json')}
-            />
-          </View>
+      <View className="flex-[0.5] justify-end gap-2 p-6">
+        <View className="mt-10 space-y-3">
+          <Text className="mt-4 text-center text-4xl font-bold text-gray-800 dark:text-white">
+            Post and Sell
+            <Text className="text-3xl text-green-500"> with Ease!</Text>
+          </Text>
+
+          <Text className="text-center text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+            Ready to save some time? Start posting your items to top
+            marketplaces like eBay, Facebook, and Mercari. Simplify your
+            selling, and reach buyers in no time!
+          </Text>
         </View>
 
-        <View className="flex-[0.5] justify-end px-6">
-          <View className="mb-8 space-y-3">
-            <Text className="text-center text-4xl font-bold text-gray-800 dark:text-white">
-              Post and Sell
-              <Text className="text-green-500"> with Ease!</Text>
-            </Text>
+        <View className="space-y-4 pb-6">
+          <Button
+            label="Start Selling"
+            onPress={() => {
+              setIsFirstTime(false);
+              router.replace('/login');
+            }}
+            className="h-16"
+          />
 
-            <Text className="text-center text-lg leading-relaxed text-gray-600 dark:text-gray-300">
-              Ready to save some time? Start posting your items to top
-              marketplaces like eBay, Facebook, and Mercari. Simplify your
-              selling, and reach buyers in no time!
-            </Text>
-          </View>
-
-          <View className="space-y-4 pb-6">
-            <Button
-              label="Start Selling"
-              onPress={() => {
-                setIsFirstTime(false);
-                router.replace('/login');
-              }}
-            />
-
-            <Text className="text-center text-sm text-gray-500 dark:text-gray-400">
-              Scan, List, and Sell Effortlessly with just a few taps
-            </Text>
-          </View>
+          <Text className="text-center text-sm text-gray-500 dark:text-gray-400">
+            Scan, List, and Sell Effortlessly with just a few taps
+          </Text>
         </View>
       </View>
     </SafeAreaView>
