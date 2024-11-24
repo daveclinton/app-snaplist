@@ -4,7 +4,6 @@ import { Env } from '@env';
 import { useColorScheme } from 'nativewind';
 import React from 'react';
 
-import { hideLoader, showLoader } from '@/components/loader';
 import { Item } from '@/components/settings/item';
 import { ItemsContainer } from '@/components/settings/items-container';
 import { LanguageItem } from '@/components/settings/language-item';
@@ -18,13 +17,11 @@ export default function Settings() {
   const [, setLoading] = React.useState(false);
   const handleSignOut = async () => {
     try {
-      showLoader();
       setLoading(true);
       await signOut();
     } catch (error) {
       console.error('Failed to sign out:', error);
     } finally {
-      hideLoader();
       setLoading(false);
     }
   };

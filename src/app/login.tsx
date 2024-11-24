@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 
-import { hideLoader, showLoader } from '@/components/loader';
 import type { LoginFormProps } from '@/components/login-form';
 import { LoginForm } from '@/components/login-form';
 import { signInWithEmail } from '@/core';
@@ -17,7 +16,6 @@ export default function Login() {
 
   const onSubmit: LoginFormProps['onSubmit'] = async (data: LoginData) => {
     try {
-      showLoader();
       setIsLoading(true);
       await signInWithEmail(data.email, data.password);
       router.replace('/(app)/');
@@ -29,7 +27,6 @@ export default function Login() {
         console.log('Sign In Failed', 'error');
       }
     } finally {
-      hideLoader();
       setIsLoading(false);
     }
   };
