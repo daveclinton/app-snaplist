@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link } from 'expo-router';
 import React from 'react';
@@ -8,19 +7,28 @@ import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import * as z from 'zod';
 
 import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
+import { ControlledPasswordInput } from '@/ui/password';
 
-const schema = z.object({
-  email: z
-    .string({
-      required_error: 'Email is required',
-    })
-    .email('Invalid email format'),
-  password: z
-    .string({
-      required_error: 'Password is required',
-    })
-    .min(6, 'Password must be at least 6 characters'),
-});
+const schema = z
+  .object({
+    email: z
+      .string({
+        required_error: 'Email is required',
+      })
+      .email('Invalid email format'),
+    password: z
+      .string({
+        required_error: 'Password is required',
+      })
+      .min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string({
+      required_error: 'Please confirm your password',
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 export type FormType = z.infer<typeof schema>;
 
@@ -73,15 +81,26 @@ export const SignupForm = ({
             autoCapitalize="none"
             autoComplete="email"
             keyboardType="email-address"
+            placeholder="example@xyz.com"
           />
 
-          <ControlledInput
-            testID="password-input"
-            control={control}
+          <ControlledPasswordInput
             name="password"
+            control={control}
             label="Password"
-            placeholder="***"
-            secureTextEntry={true}
+            placeholder="Enter your password"
+            testID="password-input"
+            editable={!isLoading}
+            textContentType="newPassword"
+            autoComplete="password-new"
+          />
+
+          <ControlledPasswordInput
+            name="confirmPassword"
+            control={control}
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            testID="confirm-password-input"
             editable={!isLoading}
             textContentType="newPassword"
             autoComplete="password-new"

@@ -9,6 +9,7 @@ import * as z from 'zod';
 
 import { supabase } from '@/core/supabase';
 import { Button, ControlledInput, Pressable, Text, View } from '@/ui';
+import { ControlledPasswordInput } from '@/ui/password';
 
 const schema = z.object({
   email: z
@@ -96,15 +97,15 @@ export const LoginForm = ({
           name="email"
           label="Email"
           editable={!isLoading}
+          placeholder="example@xyz.com"
         />
-        <ControlledInput
-          testID="password-input"
-          control={control}
+
+        <ControlledPasswordInput
           name="password"
+          control={control}
           label="Password"
-          placeholder="***"
-          secureTextEntry={true}
-          editable={!isLoading}
+          placeholder="Enter your password"
+          testID="password-input"
         />
         <Button
           testID="login-button"

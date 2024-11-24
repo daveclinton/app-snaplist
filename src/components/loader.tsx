@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import LottieView from 'lottie-react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import RootSiblings from 'react-native-root-siblings';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,8 +16,10 @@ const createLoader = () => {
     const instance = new RootSiblings(
       (
         <Loader
-          onRef={() => {
-            resolve(instance);
+          onRef={(ref) => {
+            if (ref) {
+              resolve(instance);
+            }
           }}
         />
       ),
@@ -61,19 +63,27 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 1000,
+    elevation: 1000,
   },
   container: {
     backgroundColor: 'white',
     borderRadius: 50,
     padding: 24,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   dark: {
     backgroundColor: '#1f2937',
@@ -86,7 +96,7 @@ const styles = StyleSheet.create({
   },
   lottie: {
     width: '100%',
-    flex: 1,
+    height: '100%', // Changed from flex: 1
   },
 });
 
@@ -97,12 +107,22 @@ function Loader({ onRef }: LoaderProps) {
   const isMounted = useRef(true);
 
   useEffect(() => {
-    if (onRef) {
-      onRef(animation.current);
-    }
-    if (animation.current) {
-      animation.current.play();
-    }
+    const initAnimation = async () => {
+      if (onRef) {
+        onRef(animation.current);
+      }
+
+      // Add a small delay for Android
+      if (Platform.OS === 'android') {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      if (animation.current && isMounted.current) {
+        animation.current.play();
+      }
+    };
+
+    initAnimation();
 
     return () => {
       isMounted.current = false;
@@ -135,7 +155,9 @@ function Loader({ onRef }: LoaderProps) {
             ref={animation}
             style={styles.lottie}
             source={require('../../assets/loader.json')}
-            renderMode="AUTOMATIC"
+            renderMode={Platform.OS === 'android' ? 'HARDWARE' : 'AUTOMATIC'}
+            speed={1.0}
+            hardwareAccelerationAndroid={true}
           />
         </View>
       </Animated.View>
