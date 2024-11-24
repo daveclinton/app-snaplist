@@ -1,28 +1,55 @@
-import { ChevronRight, HelpCircle } from 'lucide-react-native';
+import { Camera, Image as ImageIcon } from 'lucide-react-native';
 
 import { Text, TouchableOpacity, View } from '@/ui';
 
-export const NewUserGuide = () => (
-  <View className="mb-6 rounded-xl bg-cyan-50 p-4 dark:bg-cyan-900">
-    <View className="flex-row items-start">
-      <View className="mr-3 size-8 items-center justify-center rounded-full bg-cyan-100 dark:bg-cyan-800">
-        <HelpCircle size={20} color="#0891b2" />
-      </View>
-      <View className="flex-1">
-        <Text className="mb-1 text-base font-medium text-cyan-900 dark:text-cyan-50">
-          Quick Start Guide
-        </Text>
-        <Text className="mb-3 text-sm text-cyan-700 dark:text-cyan-200">
-          Start by scanning your first item. Just tap the camera button and
-          point at your product!
-        </Text>
-        <TouchableOpacity className="flex-row items-center" activeOpacity={0.7}>
-          <Text className="mr-1 text-sm font-medium text-cyan-600 dark:text-cyan-300">
-            Learn More
+interface MediaPickerCardProps {
+  onCameraPress: () => void;
+  onGalleryPress: () => void;
+}
+
+const MediaPickerCard: React.FC<MediaPickerCardProps> = ({
+  onCameraPress,
+  onGalleryPress,
+}: MediaPickerCardProps) => {
+  return (
+    <View className="mb-6 rounded-xl bg-white p-6 shadow-sm dark:bg-slate-800">
+      <Text className="mb-2 text-center text-xl font-semibold text-cyan-950 dark:text-white">
+        Scan Your Item
+      </Text>
+      <Text className="mb-6 text-center text-base text-cyan-700 dark:text-slate-300">
+        Take a photo or choose from your gallery to instantly identify and
+        catalog your item
+      </Text>
+
+      <View className="flex-row items-center justify-center space-x-8">
+        <View className="items-center">
+          <TouchableOpacity
+            className="mb-2 mr-4 flex items-center justify-center rounded-full bg-cyan-100 p-4 dark:bg-cyan-900"
+            activeOpacity={0.7}
+            onPress={onCameraPress}
+          >
+            <Camera className="text-cyan-600 dark:text-cyan-200" size={24} />
+          </TouchableOpacity>
+          <Text className="text-sm font-medium text-cyan-700 dark:text-cyan-300">
+            Camera
           </Text>
-          <ChevronRight size={16} color="#0891b2" />
-        </TouchableOpacity>
+        </View>
+
+        <View className="items-center">
+          <TouchableOpacity
+            className="mb-2 flex items-center justify-center rounded-full bg-cyan-100 p-4 dark:bg-cyan-900"
+            activeOpacity={0.7}
+            onPress={onGalleryPress}
+          >
+            <ImageIcon className="text-cyan-600 dark:text-cyan-200" size={24} />
+          </TouchableOpacity>
+          <Text className="text-sm font-medium text-cyan-700 dark:text-cyan-300">
+            Gallery
+          </Text>
+        </View>
       </View>
     </View>
-  </View>
-);
+  );
+};
+
+export default MediaPickerCard;

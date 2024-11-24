@@ -1,15 +1,15 @@
 import { router } from 'expo-router';
 import { MotiScrollView } from 'moti';
-import React, { useCallback } from 'react';
+import React from 'react';
 import { Alert, Linking } from 'react-native';
+import * as ImagePicker from 'react-native-image-crop-picker';
 
 import { useCreateUser } from '@/api/user';
 import { FeedHeader } from '@/components/feed-screen';
 import { CustomHeader } from '@/components/header';
 import { LinkedAccountsBar } from '@/components/link-accounts';
-import { NewUserGuide } from '@/components/new-user-guide';
+import MediaPickerCard from '@/components/new-user-guide';
 import RecentListings from '@/components/recent-listings';
-import { ScanButton } from '@/components/scan-button';
 import { show as showToast } from '@/components/toast';
 import { getUserSessionId } from '@/core/auth/utils';
 import { SUPPORTED_MARKETPLACES } from '@/core/constants';
@@ -20,6 +20,11 @@ import {
 } from '@/core/hooks/use-permissions';
 import { useInitiated } from '@/core/hooks/user-initiated';
 import { FocusAwareStatusBar, View } from '@/ui';
+
+type ImagePickerError = {
+  code: string;
+  message: string;
+};
 
 const useMarketplaceConnection = () => {
   const [isInitiated, setIsInitated] = useInitiated();
@@ -55,22 +60,16 @@ const useMarketplaceConnection = () => {
 };
 
 export default function Feed() {
-  const isNewUser = true;
   const { requestCameraAccessIfNeeded } = useCameraPermission();
   const { requestPhotoAccessIfNeeded } = usePhotoLibraryPermission();
   const { handleCreateUser, isPending } = useMarketplaceConnection();
 
-  const onPressTakePicture = useCallback(async () => {
-    console.log('Here');
-    try {
-      if (!(await requestCameraAccessIfNeeded())) {
-        return;
-      }
-      if (!(await requestPhotoAccessIfNeeded())) {
-        return;
-      }
-      await router.push('/scan/scan');
-    } catch (err) {
+  const handleError = (error: unknown) => {
+    const isImagePickerError = (err: unknown): err is ImagePickerError => {
+      return typeof err === 'object' && err !== null && 'code' in err;
+    };
+
+    if (isImagePickerError(error) && error.code !== 'E_PICKER_CANCELLED') {
       Alert.alert(
         'Permissions needed',
         'Snaplist needs camera and photo access to continue',
@@ -80,10 +79,53 @@ export default function Feed() {
         ],
       );
     }
-  }, [requestCameraAccessIfNeeded, requestPhotoAccessIfNeeded]);
+  };
+
+  const handleImageSelection = async (image: ImagePicker.Image) => {
+    const encodedUri = await encodeURIComponent(image.path);
+    await router.push(`/scan/${encodedUri}`);
+  };
+
+  const openCamera = async () => {
+    const hasPermission = await requestCameraAccessIfNeeded();
+    if (!hasPermission) return;
+
+    try {
+      const image = await ImagePicker.openCamera({
+        width: 1200,
+        height: 1200,
+        cropping: true,
+        mediaType: 'photo',
+        compressImageQuality: 0.8,
+      });
+
+      handleImageSelection(image);
+    } catch (error) {
+      handleError(error);
+    }
+  };
+
+  const openGallery = async () => {
+    const hasPermission = await requestPhotoAccessIfNeeded();
+    if (!hasPermission) return;
+
+    try {
+      const image = await ImagePicker.openPicker({
+        width: 1200,
+        height: 1200,
+        cropping: true,
+        mediaType: 'photo',
+        compressImageQuality: 0.8,
+      });
+
+      handleImageSelection(image);
+    } catch (error) {
+      handleError(error);
+    }
+  };
 
   return (
-    <FeedHeader onCameraOpen={onPressTakePicture}>
+    <FeedHeader onCameraOpen={openCamera}>
       <View className="relative flex-1 bg-white px-4 dark:bg-gray-900">
         <MotiScrollView className="px-3" showsVerticalScrollIndicator={false}>
           <FocusAwareStatusBar />
@@ -94,8 +136,10 @@ export default function Feed() {
             isLoading={isPending}
           />
 
-          {isNewUser && <NewUserGuide />}
-          <ScanButton onPress={onPressTakePicture} />
+          <MediaPickerCard
+            onCameraPress={openCamera}
+            onGalleryPress={openGallery}
+          />
           <RecentListings scans={userData.recentScans} viewAll />
         </MotiScrollView>
       </View>
