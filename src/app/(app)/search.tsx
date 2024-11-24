@@ -1,7 +1,12 @@
-import { router } from 'expo-router';
+import { router, usePathname, useRouter } from 'expo-router';
 import debounce from 'lodash/debounce';
-import { AlertCircle, ArrowBigLeftIcon, Camera } from 'lucide-react-native';
-import React, { useCallback, useMemo, useState } from 'react';
+import {
+  AlertCircle,
+  ArrowBigLeftIcon,
+  Camera,
+  Images,
+} from 'lucide-react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   type NativeScrollEvent,
@@ -12,6 +17,11 @@ import {
 } from 'react-native';
 
 import { useImageSearch } from '@/api/products/use-search';
+import { useImagePicker } from '@/core/hooks/image-picker';
+import {
+  useCameraPermission,
+  usePhotoLibraryPermission,
+} from '@/core/hooks/use-permissions';
 import { Image, SafeAreaView, Text, View } from '@/ui';
 
 interface Product {
@@ -38,6 +48,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
   initialValue = '',
 }) => {
   const [searchTerm, setSearchTerm] = useState(initialValue);
+  const inputRef = React.useRef<TextInput>(null);
+
+  const { requestCameraAccessIfNeeded } = useCameraPermission();
+  const { requestPhotoAccessIfNeeded } = usePhotoLibraryPermission();
+  const { openCamera, openGallery } = useImagePicker(
+    requestCameraAccessIfNeeded,
+    requestPhotoAccessIfNeeded,
+  );
+
+  const router = useRouter();
+  const pathname = usePathname();
 
   const debouncedSearch = useMemo(
     () => debounce((term: string) => onSearch(term), 500),
@@ -48,6 +69,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
     setSearchTerm(text);
     debouncedSearch(text);
   };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      inputRef?.current?.focus();
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [pathname]);
 
   return (
     <View className="w-full bg-white p-4 shadow-sm">
@@ -62,6 +91,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </Pressable>
 
         <TextInput
+          ref={inputRef}
           value={searchTerm}
           onChangeText={handleChange}
           placeholder="Search on Snaplist"
@@ -72,15 +102,24 @@ const SearchBar: React.FC<SearchBarProps> = ({
           autoCapitalize="none"
           autoCorrect={false}
         />
-
-        <Pressable
-          onPress={() => router.push('/scan/scan')}
-          className="ml-2 p-2"
-          accessibilityLabel="Image search"
-          accessibilityRole="button"
-        >
-          <Camera width={20} height={20} color="#0891b2" />
-        </Pressable>
+        <View className="flex flex-row">
+          <Pressable
+            onPress={openCamera}
+            className="ml-2 p-2"
+            accessibilityLabel="Image search"
+            accessibilityRole="button"
+          >
+            <Camera width={20} height={20} color="#0891b2" />
+          </Pressable>
+          <Pressable
+            onPress={openGallery}
+            className="ml-2 p-2"
+            accessibilityLabel="Image search"
+            accessibilityRole="button"
+          >
+            <Images width={20} height={20} color="#0891b2" />
+          </Pressable>
+        </View>
       </View>
     </View>
   );

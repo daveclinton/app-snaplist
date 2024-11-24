@@ -21,10 +21,10 @@ const MediaPickerCard: React.FC<MediaPickerCardProps> = ({
         catalog your item
       </Text>
 
-      <View className="flex-row items-center justify-center space-x-8">
+      <View className="flex-row items-center justify-center gap-5">
         <View className="items-center">
           <TouchableOpacity
-            className="mb-2 mr-4 flex items-center justify-center rounded-full bg-cyan-100 p-4 dark:bg-cyan-900"
+            className="mb-2 flex items-center justify-center rounded-full bg-cyan-100 p-4 dark:bg-cyan-900"
             activeOpacity={0.7}
             onPress={onCameraPress}
           >
