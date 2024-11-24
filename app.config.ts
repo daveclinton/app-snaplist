@@ -27,7 +27,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   owner: Env.EXPO_ACCOUNT_OWNER,
   scheme: Env.SCHEME,
   slug: 'snaplist',
-  version: Env.VERSION.toString(),
+  version: '1.3.6',
   orientation: 'portrait',
   icon: './assets/icon.png',
   userInterfaceStyle: 'automatic',
@@ -46,7 +46,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   assetBundlePatterns: ['**/*'],
   ios: {
     supportsTablet: true,
-    bundleIdentifier: Env.BUNDLE_ID,
+    bundleIdentifier: 'com.daveclinton.snaplistt',
   },
   experiments: {
     typedRoutes: true,

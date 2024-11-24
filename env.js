@@ -37,8 +37,8 @@ require('dotenv').config({
 const BUNDLE_ID = 'com.snaplist'; // ios bundle id
 const PACKAGE = 'com.snaplist'; // android package name
 const NAME = 'Snaplist'; // app name
-const EXPO_ACCOUNT_OWNER = 'martinki'; // expo account owner
-const EAS_PROJECT_ID = '4ec4fd6b-63b4-41c9-bca3-e0f20fc8da25'; // eas project id
+const EXPO_ACCOUNT_OWNER = 'daveclinton'; // expo account owner
+const EAS_PROJECT_ID = 'ba3e4cf6-b304-4705-a81c-f4ddfef840b1'; // eas project id
 const SCHEME = 'com.snaplist'; // app scheme
 
 /**
