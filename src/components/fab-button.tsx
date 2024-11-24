@@ -103,6 +103,7 @@ const FAB = () => {
       pathname: '/scan/create-listing',
       params: { initialData: encodedInitialData },
     });
+    isOpen.value = !isOpen.value;
   };
 
   const opacityText = useAnimatedStyle(() => {
@@ -187,7 +188,10 @@ const FAB = () => {
         <Animated.Text style={[styles.text, opacityText]}>Create</Animated.Text>
       </AnimatedTouchable>
       <AnimatedTouchable
-        onPress={() => router.push('/scan/scan')}
+        onPress={() => {
+          router.push('/scan/scan');
+          isOpen.value = !isOpen.value;
+        }}
         style={[styles.contentContainer, secondIcon, secondWidthStyle]}
       >
         <View style={styles.iconContainer}>
@@ -196,7 +200,10 @@ const FAB = () => {
         <Animated.Text style={[styles.text, opacityText]}>Scan</Animated.Text>
       </AnimatedTouchable>
       <AnimatedTouchable
-        onPress={() => router.push('/(app)/search')}
+        onPress={() => {
+          router.push('/(app)/search');
+          isOpen.value = !isOpen.value;
+        }}
         style={[styles.contentContainer, firstIcon, firstWidthStyle]}
       >
         <View style={styles.iconContainer}>

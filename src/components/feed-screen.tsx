@@ -78,7 +78,7 @@ export const FeedHeader = ({
               <Link asChild href="/feed/new-marketplace">
                 <Pressable style={styles.actionButton}>
                   <MaterialIcons
-                    name="add"
+                    name="notifications"
                     size={24}
                     color={isDark ? '#FFFFFF' : '#000000'}
                   />

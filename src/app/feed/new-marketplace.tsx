@@ -1,5 +1,11 @@
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import {
+  router,
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+} from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
+import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -28,6 +34,8 @@ export default function MarketplaceOAuthScreen() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [userSupabaseId, setUserSupabaseId] = useState<string | null>(null);
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   const { data, isPending, isError, refetch } = useMarkeplaces({
     variables: { userSupabaseId: userSupabaseId! },
@@ -99,6 +107,16 @@ export default function MarketplaceOAuthScreen() {
 
   return (
     <View className="flex-1 bg-white dark:bg-gray-900">
+      <Stack.Screen
+        options={{
+          title: 'Connect Marketplaces',
+          headerBackTitle: 'Home',
+          headerStyle: {
+            backgroundColor: isDark ? '#030712' : '#f9fafb',
+          },
+          headerTintColor: isDark ? '#f3f4f6' : '#111827',
+        }}
+      />
       <ScrollView
         className="flex-[0.8] px-6 pb-4 pt-6"
         contentContainerStyle={{ paddingBottom: 100 }}
