@@ -8,19 +8,23 @@ export function redirectSystemPath({
   try {
     console.log('Native Intent - Received path:', path);
     console.log('Native Intent - Is initial:', initial);
+
     if (initial) {
-      const pathSegments = path.split('/');
-      let redirectedPath = '';
-      for (let i = 1; i < pathSegments.length; i++) {
-        const segment = pathSegments[i];
-        if (segment.includes('?')) {
-          const [route, queryParams] = segment.split('?');
-          redirectedPath += `/${route}?${queryParams}`;
-        } else {
-          redirectedPath += `/${segment}`;
+      if (path.includes('supabase.co/auth/v1/verify')) {
+        const params = new URLSearchParams(path.split('?')[1]);
+        const token = params.get('token');
+        const type = params.get('type');
+
+        if (token && type) {
+          return `/reset-password?token=${token}&type=${type}`;
         }
       }
-      if (redirectedPath.startsWith('/feed/new-marketplace')) {
+
+      const pathSegments = path.split('/');
+      if (
+        pathSegments.includes('feed') &&
+        pathSegments.includes('new-marketplace')
+      ) {
         const marketplace = new URLSearchParams(path).get('marketplace');
         const connection = new URLSearchParams(path).get('connection');
 
@@ -29,6 +33,18 @@ export function redirectSystemPath({
 
         if (marketplace && connection === 'success') {
           return `/feed/new-marketplace?marketplace=${marketplace}&connection=${connection}`;
+        }
+      }
+
+      let redirectedPath = '';
+      const segments = path.split('/');
+      for (let i = 1; i < segments.length; i++) {
+        const segment = segments[i];
+        if (segment.includes('?')) {
+          const [route, queryParams] = segment.split('?');
+          redirectedPath += `/${route}?${queryParams}`;
+        } else {
+          redirectedPath += `/${segment}`;
         }
       }
       return redirectedPath;

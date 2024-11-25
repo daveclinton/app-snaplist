@@ -25,7 +25,6 @@ export default function Signup() {
       console.log(
         err instanceof Error ? err.message : 'Failed to create account',
       );
-      // Handle specific error cases
       if (err instanceof Error) {
         console.log(err.message, 'error');
       } else {
