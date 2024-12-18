@@ -217,27 +217,23 @@ export default function CreateListingScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-        {/* Progress Indicator */}
         <StepProgressIndicator
           currentStep={step}
           totalSteps={STEPS.length}
-          activeColor="#0284c7" // Cyan-500
-          inactiveColor="#d1d5db" // Gray-300
+          activeColor="#0284c7"
+          inactiveColor="#d1d5db"
         />
 
-        {/* Step Title */}
         <View className="border-b border-gray-200 p-4 dark:border-gray-800">
           <Text className="text-xl font-bold dark:text-gray-100">
             {STEPS[step - 1].title}
           </Text>
         </View>
 
-        {/* Form Content */}
         <ScrollView className="flex-1">
-          <CurrentStepComponent {...stepProps} />
+          <CurrentStepComponent categories={[]} {...stepProps} />
         </ScrollView>
 
-        {/* Error Message */}
         {errors.submit && (
           <View className="bg-red-100 px-4 py-2 dark:bg-red-900">
             <Text className="text-red-600 dark:text-red-100">
@@ -246,7 +242,6 @@ export default function CreateListingScreen() {
           </View>
         )}
 
-        {/* Navigation Buttons */}
         <View className="flex-row justify-between border-t border-gray-200 p-4 dark:border-gray-800">
           {step > 1 && (
             <Button

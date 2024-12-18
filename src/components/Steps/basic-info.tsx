@@ -4,10 +4,14 @@ import { Text, TextInput, View } from 'react-native';
 import { type ListingFormData } from '@/api';
 import { type OptionType, Select } from '@/ui/select';
 
+import DescriptionInput from '../description-input';
+
 interface BasicInfoFormProps {
   formData: ListingFormData;
   updateForm: (field: keyof ListingFormData, value: string | number) => void;
   errors: Record<string, string>;
+  categories: OptionType[];
+  itemTypeLabel?: string;
 }
 
 const CONDITIONS: OptionType[] = [
@@ -16,12 +20,6 @@ const CONDITIONS: OptionType[] = [
   { value: '3', label: 'Very Good' },
   { value: '4', label: 'Good' },
   { value: '5', label: 'Acceptable' },
-] as const;
-
-const CATEGORIES: OptionType[] = [
-  { value: '29223', label: 'Books & Magazines' },
-  { value: '12345', label: 'Smartphones' },
-  { value: '98765', label: 'Laptops' },
 ] as const;
 
 const FormField = ({
@@ -59,6 +57,8 @@ export default function BasicInfoForm({
   formData,
   updateForm,
   errors,
+  categories,
+  itemTypeLabel = 'Item',
 }: BasicInfoFormProps) {
   const handleUpdate =
     (field: keyof ListingFormData) => (value: string | number) => {
@@ -67,23 +67,21 @@ export default function BasicInfoForm({
 
   return (
     <View className="space-y-6 p-4">
-      <FormField label="Title" error={errors.title}>
+      <FormField label={`${itemTypeLabel} Title`} error={errors.title}>
         <StyledTextInput
           value={formData.title}
           onChangeText={handleUpdate('title')}
-          placeholder="Enter the book title"
+          placeholder={`Enter the ${itemTypeLabel.toLowerCase()} title`}
           maxLength={80}
         />
       </FormField>
 
-      <FormField label="Description" error={errors.description}>
-        <StyledTextInput
+      <FormField label="" error={errors.description}>
+        <DescriptionInput
           value={formData.description}
           onChangeText={handleUpdate('description')}
-          placeholder="Describe the book's condition, edition, and any notable features"
-          multiline
-          textAlignVertical="top"
-          maxLength={8000}
+          error={errors.description}
+          itemTypeLabel={itemTypeLabel}
         />
       </FormField>
 
@@ -91,7 +89,7 @@ export default function BasicInfoForm({
         <Select
           value={formData.categoryId}
           onSelect={(value: string | number) => {
-            const selectedCategory = CATEGORIES.find(
+            const selectedCategory = categories.find(
               (category) => category.value === value,
             );
             if (selectedCategory) {
@@ -99,8 +97,8 @@ export default function BasicInfoForm({
               updateForm('categoryName', selectedCategory.label);
             }
           }}
-          options={CATEGORIES}
-          placeholder="Select book category"
+          options={categories}
+          placeholder={`Select ${itemTypeLabel.toLowerCase()} category`}
           error={errors.category}
         />
       </FormField>
@@ -110,7 +108,7 @@ export default function BasicInfoForm({
           value={formData.condition}
           onSelect={handleUpdate('condition')}
           options={CONDITIONS}
-          placeholder="Select book condition"
+          placeholder={`Select ${itemTypeLabel.toLowerCase()} condition`}
           error={errors.condition}
         />
       </FormField>

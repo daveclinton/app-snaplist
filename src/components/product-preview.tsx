@@ -69,7 +69,7 @@ const ProductPreviewScreen = () => {
         <ScrollView
           contentContainerStyle={{
             paddingHorizontal: 16,
-            paddingBottom: 100, // Extra padding to prevent content being hidden behind button
+            paddingBottom: 100,
           }}
           showsVerticalScrollIndicator={false}
         >
