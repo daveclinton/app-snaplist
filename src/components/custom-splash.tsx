@@ -1,4 +1,3 @@
-// components/custom-splash.tsx
 import React from 'react';
 import { ActivityIndicator, Dimensions, StyleSheet, View } from 'react-native';
 

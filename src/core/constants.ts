@@ -23,8 +23,8 @@ export const SUPPORTED_MARKETPLACES: MarketplaceConfig[] = [
       'https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/042013/ebay_logo.png?itok=QLz1bS2p',
     oauth_url: 'https://auth.ebay.com/oauth2/authorize',
     token_url: 'https://api.ebay.com/identity/v1/oauth2/token',
-    client_id: Env.EBAY_CLIENT_ID || '',
-    client_secret: Env.EBAY_CLIENT_SECRET || '',
+    client_id: '',
+    client_secret: '',
     redirect_uri: `${Env.APP_URL}/api/marketplace/callback/ebay`,
     scope:
       'https://api.ebay.com/oauth/api_scope/sell.inventory.readonly https://api.ebay.com/oauth/api_scope/sell.inventory',

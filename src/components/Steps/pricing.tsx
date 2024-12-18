@@ -52,14 +52,11 @@ const PriceInput = ({
   error?: string;
 }) => {
   const formatPrice = (input: string) => {
-    // Remove non-numeric characters except decimal point
     const cleaned = input.replace(/[^0-9.]/g, '');
 
-    // Ensure only one decimal point
     const parts = cleaned.split('.');
     if (parts.length > 2) return value;
 
-    // Limit to two decimal places
     if (parts[1]?.length > 2) {
       return `${parts[0]}.${parts[1].slice(0, 2)}`;
     }
@@ -133,10 +130,8 @@ export default function PricingForm({
       const result = await launchImageLibraryAsync(pickerOptions);
 
       if (!result.canceled) {
-        // Get the first selected asset
         const selectedImage = result.assets[0];
 
-        // Crop the image
         const croppedImage = await ImagePicker.openCropper({
           path: selectedImage.uri,
           width: 800,
@@ -147,7 +142,6 @@ export default function PricingForm({
           mediaType: 'photo',
         });
 
-        // Update form with the cropped image
         updateForm('pictures', [
           ...(formData.pictures || []),
           croppedImage.path,
@@ -155,7 +149,6 @@ export default function PricingForm({
       }
     } catch (error) {
       console.error('Error selecting or cropping image:', error);
-      // You might want to show an error message to the user here
     } finally {
       setIsSelectingImage(false);
     }
@@ -174,7 +167,6 @@ export default function PricingForm({
       updateForm('pictures', [...(formData.pictures || []), image.path]);
     } catch (error) {
       console.error('Error capturing image:', error);
-      // You might want to show an error message to the user here
     } finally {
       setIsSelectingImage(false);
     }

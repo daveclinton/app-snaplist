@@ -7,3 +7,12 @@ export interface CreateUserResponse {
 export interface CreateUserVariables {
   supabase_user_id: string;
 }
+
+export interface RecentScan {
+  id: number;
+  name: string;
+  image: string;
+  description: string;
+  postedOn: string[];
+  date: string;
+}

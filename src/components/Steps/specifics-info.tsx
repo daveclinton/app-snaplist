@@ -4,7 +4,6 @@ import { Text, TextInput, View } from 'react-native';
 import { type SpecificsFormProps } from '@/api';
 import { type OptionType, Select } from '@/ui/select';
 
-// Common book publishers
 const PUBLISHERS: OptionType[] = [
   { value: 'penguin', label: 'Penguin Random House' },
   { value: 'hachette', label: 'Hachette Book Group' },
@@ -14,7 +13,6 @@ const PUBLISHERS: OptionType[] = [
   { value: 'other', label: 'Other' },
 ] as const;
 
-// Common languages based on ISO 639-1
 const LANGUAGES: OptionType[] = [
   { value: 'en', label: 'English' },
   { value: 'es', label: 'Spanish' },
@@ -84,7 +82,6 @@ export default function SpecificsForm({
     updateNestedForm('specifics', field, value as string);
   };
 
-  // Determine if we should show custom publisher input
   const showCustomPublisher = useMemo(() => {
     return (
       formData.specifics?.publisher === 'other' ||
@@ -92,7 +89,6 @@ export default function SpecificsForm({
     );
   }, [formData.specifics?.publisher]);
 
-  // Determine if we should show custom language input
   const showCustomLanguage = useMemo(() => {
     return (
       formData.specifics?.language === 'other' ||
