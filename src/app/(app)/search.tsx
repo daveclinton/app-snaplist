@@ -271,9 +271,13 @@ const SearchResults: React.FC = () => {
         scrollEventThrottle={400}
       >
         <View className="p-4">
-          {data?.products.map((product) => (
-            <ProductCard key={product?.id} product={product} />
-          ))}
+          {data?.products.map((product, index) => {
+            const uniqueKey =
+              product?.id ||
+              `product-${index}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+            return <ProductCard key={uniqueKey} product={product} />;
+          })}
         </View>
       </ScrollView>
     </SafeAreaView>
