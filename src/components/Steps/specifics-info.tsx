@@ -4,25 +4,19 @@ import { Text, TextInput, View } from 'react-native';
 import { type SpecificsFormProps } from '@/api';
 import { type OptionType, Select } from '@/ui/select';
 
-const PUBLISHERS: OptionType[] = [
-  { value: 'penguin', label: 'Penguin Random House' },
-  { value: 'hachette', label: 'Hachette Book Group' },
-  { value: 'harpercollins', label: 'HarperCollins' },
-  { value: 'macmillan', label: 'Macmillan Publishers' },
-  { value: 'simon', label: 'Simon & Schuster' },
+const MANUFACTURERS: OptionType[] = [
+  { value: 'sony', label: 'Sony' },
+  { value: 'samsung', label: 'Samsung' },
+  { value: 'apple', label: 'Apple' },
+  { value: 'microsoft', label: 'Microsoft' },
   { value: 'other', label: 'Other' },
 ] as const;
 
-const LANGUAGES: OptionType[] = [
-  { value: 'en', label: 'English' },
-  { value: 'es', label: 'Spanish' },
-  { value: 'fr', label: 'French' },
-  { value: 'de', label: 'German' },
-  { value: 'it', label: 'Italian' },
-  { value: 'pt', label: 'Portuguese' },
-  { value: 'ru', label: 'Russian' },
-  { value: 'zh', label: 'Chinese' },
-  { value: 'ja', label: 'Japanese' },
+const CATEGORIES: OptionType[] = [
+  { value: 'electronics', label: 'Electronics' },
+  { value: 'furniture', label: 'Furniture' },
+  { value: 'clothing', label: 'Clothing' },
+  { value: 'toys', label: 'Toys' },
   { value: 'other', label: 'Other' },
 ] as const;
 
@@ -82,83 +76,81 @@ export default function SpecificsForm({
     updateNestedForm('specifics', field, value as string);
   };
 
-  const showCustomPublisher = useMemo(() => {
+  const showCustomManufacturer = useMemo(() => {
     return (
-      formData.specifics?.publisher === 'other' ||
-      !PUBLISHERS.some((p) => p.value === formData.specifics?.publisher)
+      formData.specifics?.manufacturer === 'other' ||
+      !MANUFACTURERS.some((m) => m.value === formData.specifics?.manufacturer)
     );
-  }, [formData.specifics?.publisher]);
+  }, [formData.specifics?.manufacturer]);
 
-  const showCustomLanguage = useMemo(() => {
+  const showCustomCategory = useMemo(() => {
     return (
-      formData.specifics?.language === 'other' ||
-      !LANGUAGES.some((l) => l.value === formData.specifics?.language)
+      formData.specifics?.category === 'other' ||
+      !CATEGORIES.some((c) => c.value === formData.specifics?.category)
     );
-  }, [formData.specifics?.language]);
+  }, [formData.specifics?.category]);
 
   return (
     <View className="space-y-6 p-4">
       <FormField
-        label="Publisher"
-        error={errors.publisher}
-        helperText="Select from common publishers or enter a custom one"
+        label="Manufacturer"
+        error={errors.manufacturer}
+        helperText="Select from common manufacturers or enter a custom one"
         required
       >
         <View className="space-y-2">
           <Select
-            value={formData.specifics?.publisher}
-            onSelect={handleUpdate('publisher')}
-            options={PUBLISHERS}
-            placeholder="Select publisher"
-            error={errors.publisher}
+            value={formData.specifics?.manufacturer}
+            onSelect={handleUpdate('manufacturer')}
+            options={MANUFACTURERS}
+            placeholder="Select manufacturer"
+            error={errors.manufacturer}
           />
-          {showCustomPublisher && (
+          {showCustomManufacturer && (
             <StyledTextInput
-              value={formData.specifics?.publisher || ''}
-              onChangeText={handleUpdate('publisherCustom')}
-              placeholder="Enter custom publisher"
-              error={errors.publisherCustom}
+              value={formData.specifics?.manufacturer || ''}
+              onChangeText={handleUpdate('manufacturerCustom')}
+              placeholder="Enter custom manufacturer"
+              error={errors.manufacturerCustom}
             />
           )}
         </View>
       </FormField>
 
       <FormField
-        label="Author"
-        error={errors.author}
-        helperText="Enter the full name of the book's author(s)"
+        label="Product Name"
+        error={errors.productName}
+        helperText="Enter the name of the product"
         required
       >
         <StyledTextInput
-          value={formData.specifics?.author}
-          onChangeText={handleUpdate('author')}
-          placeholder="Enter author name"
-          error={errors.author}
-          autoCapitalize="words"
+          value={formData.specifics?.productName}
+          onChangeText={handleUpdate('productName')}
+          placeholder="Enter product name"
+          error={errors.productName}
         />
       </FormField>
 
       <FormField
-        label="Language"
-        error={errors.language}
-        helperText="Select the primary language of the book"
+        label="Category"
+        error={errors.category}
+        helperText="Select the product category"
         required
       >
         <View className="space-y-2">
           <Select
-            value={formData.specifics?.language}
-            onSelect={handleUpdate('language')}
-            options={LANGUAGES}
-            placeholder="Select language"
-            error={errors.language}
+            value={formData.specifics?.category}
+            onSelect={handleUpdate('category')}
+            options={CATEGORIES}
+            placeholder="Select category"
+            error={errors.category}
           />
-          {showCustomLanguage && (
+          {showCustomCategory && (
             <StyledTextInput
-              value={formData.specifics?.language || ''}
-              onChangeText={handleUpdate('languageCustom')}
-              placeholder="Enter custom language"
-              error={errors.languageCustom}
-              autoCapitalize="words"
+              value={formData.specifics?.category || ''}
+              onChangeText={handleUpdate('categoryCustom')}
+              placeholder="Enter custom category"
+              error={errors.categoryCustom}
             />
           )}
         </View>

@@ -39,13 +39,15 @@ const STEPS = [
   },
   {
     id: 2,
-    title: 'Book Details',
+    title: 'Product Details',
     component: SpecificsForm,
     validate: (data: ListingFormData) => {
       const errors: Record<string, string> = {};
-      if (!data.specifics.publisher) errors.publisher = 'Publisher is required';
-      if (!data.specifics.author) errors.author = 'Author is required';
-      if (!data.specifics.language) errors.language = 'Language is required';
+      if (!data.specifics.manufacturer)
+        errors.manufacturer = 'Manufacturer is required';
+      if (!data.specifics.productName)
+        errors.productName = 'Product name is required';
+      if (!data.specifics.category) errors.category = 'Category is required';
       return errors;
     },
   },
@@ -85,45 +87,22 @@ const STEPS = [
 ] as const;
 
 const createListingPayload = (formData: ListingFormData) => ({
-  Item: {
-    Title: formData.title,
-    Description: formData.description,
-    PrimaryCategory: { CategoryID: formData.categoryId },
-    CategoryName: formData.categoryName,
-    StartPrice: parseFloat(formData.price),
-    CategoryMappingAllowed: true,
-    Country: 'US',
-    Currency: 'USD',
-    DispatchTimeMax: formData.shipping.dispatchDays,
-    ListingDuration: 'Days_7',
-    ListingType: 'Chinese',
-    PictureDetails: { PictureURL: formData.pictures[0] },
-    PostalCode: '95125',
-    Quantity: 1,
-    ItemSpecifics: [
-      { Name: 'Title', Value: formData.title },
-      { Name: 'Publisher', Value: formData.specifics.publisher },
-      { Name: 'Author', Value: formData.specifics.author },
-      { Name: 'Language', Value: formData.specifics.language },
-    ],
-    ReturnPolicy: {
-      ReturnsAcceptedOption: formData.returns.accepted
-        ? 'ReturnsAccepted'
-        : 'ReturnsNotAccepted',
-      RefundOption: 'MoneyBack',
-      ReturnsWithinOption: `Days_${formData.returns.period}`,
-      ShippingCostPaidByOption: formData.returns.shippingPaidBy,
-    },
-    ShippingDetails: {
-      ShippingType: 'Flat',
-      ShippingServiceOptions: [
-        {
-          ShippingServicePriority: 1,
-          ShippingService: formData.shipping.service,
-          ShippingServiceCost: formData.shipping.cost,
-        },
-      ],
-    },
+  title: formData.title,
+  description: formData.description,
+  categoryId: formData.categoryId,
+  categoryName: formData.categoryName,
+  price: parseFloat(formData.price),
+  pictures: formData.pictures,
+  specifics: formData.specifics,
+  shipping: {
+    service: formData.shipping.service,
+    cost: parseFloat(formData.shipping.cost),
+    dispatchDays: formData.shipping.dispatchDays,
+  },
+  returns: {
+    accepted: formData.returns.accepted,
+    period: formData.returns.period,
+    shippingPaidBy: formData.returns.shippingPaidBy,
   },
 });
 

@@ -15,9 +15,9 @@ export interface ProductResult {
 }
 
 type SpecificsData = {
-  publisher: string;
-  author: string;
-  language: string;
+  manufacturer: string;
+  productName: string;
+  category: string;
 };
 
 type ShippingData = {
