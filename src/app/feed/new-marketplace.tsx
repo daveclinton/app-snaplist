@@ -73,10 +73,44 @@ export default function MarketplaceOAuthScreen() {
     }
   };
 
+  const handleCreateListing = () => {
+    const initialData = {
+      title: '',
+      description: '',
+      price: '',
+      pictures: [''],
+      category: '',
+      condition: '',
+      specifics: {
+        publisher: '',
+        author: '',
+        language: '',
+      },
+      shipping: {
+        service: 'USPSMedia',
+        cost: 2.5,
+        dispatchDays: 3,
+      },
+      returns: {
+        accepted: true,
+        period: 30,
+        shippingPaidBy: 'Buyer',
+      },
+    };
+
+    // Encode the initialData before passing it as a parameter
+    const encodedInitialData = encodeURIComponent(JSON.stringify(initialData));
+
+    router.push({
+      pathname: '/scan/create-listing',
+      params: { initialData: encodedInitialData },
+    });
+  };
+
   const handleContinue = async () => {
     setLoading(true);
     try {
-      router.back();
+      handleCreateListing();
     } catch (error) {
       console.error('Continue Error:', error);
       setError('Failed to proceed');
