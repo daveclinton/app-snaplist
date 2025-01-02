@@ -1,8 +1,17 @@
-// utils/cloudinary.ts
 import { Platform } from 'react-native';
 
-export const uploadToCloudinary = async (imageUri: string): Promise<string> => {
-  // On iOS, we need to remove the 'file://' prefix
+// const CLOUDINARY_UPLOAD_PRESET = 'listing';
+// const CLOUDINARY_CLOUD_NAME = 'dazawvf2g';
+
+export const uploadToCloudinary = async (
+  imageUri: string,
+  uploadPreset: string,
+  cloudName: string,
+): Promise<string> => {
+  if (!imageUri || !uploadPreset || !cloudName) {
+    throw new Error('Missing required upload parameters');
+  }
+
   const normalizedUri =
     Platform.OS === 'ios' ? imageUri.replace('file://', '') : imageUri;
 
@@ -12,11 +21,11 @@ export const uploadToCloudinary = async (imageUri: string): Promise<string> => {
     type: 'image/jpeg',
     name: 'upload.jpg',
   } as any);
-  formData.append('upload_preset', 'listing');
+  formData.append('upload_preset', uploadPreset);
 
   try {
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/dazawvf2g/image/upload`,
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
       {
         method: 'POST',
         body: formData,
@@ -24,10 +33,15 @@ export const uploadToCloudinary = async (imageUri: string): Promise<string> => {
     );
 
     if (!response.ok) {
-      throw new Error('Upload failed');
+      const errorData = await response.text();
+      throw new Error(`Upload failed: ${errorData}`);
     }
 
     const data = await response.json();
+    if (!data.secure_url) {
+      throw new Error('No secure_url in response');
+    }
+
     return data.secure_url;
   } catch (error) {
     console.error('Cloudinary upload error:', error);

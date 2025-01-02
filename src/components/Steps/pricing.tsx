@@ -5,13 +5,16 @@ import {
 } from 'expo-image-picker';
 import { Camera, X } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Pressable } from 'react-native';
+import { Alert, Pressable } from 'react-native';
 import * as ImagePicker from 'react-native-image-crop-picker';
 
 import { type ListingFormData } from '@/api';
 import { uploadToCloudinary } from '@/api/common/cloudinary';
 import { Button, Image, Text, View } from '@/ui';
 import PriceInput from '@/ui/price-input';
+
+const CLOUDINARY_UPLOAD_PRESET = 'listing';
+const CLOUDINARY_CLOUD_NAME = 'dazawvf2g';
 
 interface PricingFormProps {
   formData: ListingFormData;
@@ -80,9 +83,10 @@ export default function PricingForm({
   const [isSelectingImage, setIsSelectingImage] = useState(false);
 
   const handleImageSelect = async () => {
+    if (isSelectingImage) return; // Prevent multiple simultaneous uploads
+
     setIsSelectingImage(true);
     try {
-      // Launch image picker
       const pickerOptions: ImagePickerOptions = {
         mediaTypes: MediaTypeOptions.Images,
         allowsEditing: true,
@@ -92,10 +96,16 @@ export default function PricingForm({
 
       const result = await launchImageLibraryAsync(pickerOptions);
 
-      if (!result.canceled) {
-        const selectedImage = result.assets[0];
+      if (result.canceled) {
+        setIsSelectingImage(false);
+        return;
+      }
 
-        const croppedImage = await ImagePicker.openCropper({
+      const selectedImage = result.assets[0];
+
+      let croppedImage;
+      try {
+        croppedImage = await ImagePicker.openCropper({
           path: selectedImage.uri,
           width: 800,
           height: 800,
@@ -104,18 +114,42 @@ export default function PricingForm({
           compressImageQuality: 0.8,
           mediaType: 'photo',
         });
-        const cloudinaryUrl = await uploadToCloudinary(croppedImage.path);
+      } catch (cropError) {
+        console.error('Error cropping:', cropError);
+        setIsSelectingImage(false);
+        return;
+      }
+
+      try {
+        const cloudinaryUrl = await uploadToCloudinary(
+          croppedImage.path,
+          CLOUDINARY_UPLOAD_PRESET,
+          CLOUDINARY_CLOUD_NAME,
+        );
+
+        if (!cloudinaryUrl) {
+          throw new Error('No URL returned from Cloudinary');
+        }
 
         updateForm('pictures', [...(formData.pictures || []), cloudinaryUrl]);
+      } catch (uploadError) {
+        console.error('Upload error:', uploadError);
+        Alert.alert(
+          'Upload Failed',
+          'Failed to upload image. Please try again.',
+        );
       }
     } catch (error) {
-      console.error('Error selecting or cropping image:', error);
+      console.error('Selection error:', error);
+      Alert.alert('Error', 'Failed to select image. Please try again.');
     } finally {
       setIsSelectingImage(false);
     }
   };
 
   const handleCameraCapture = async () => {
+    if (isSelectingImage) return;
+
     setIsSelectingImage(true);
     try {
       const image = await ImagePicker.openCamera({
@@ -125,11 +159,28 @@ export default function PricingForm({
         compressImageQuality: 0.8,
       });
 
-      const cloudinaryUrl = await uploadToCloudinary(image.path);
+      try {
+        const cloudinaryUrl = await uploadToCloudinary(
+          image.path,
+          CLOUDINARY_UPLOAD_PRESET,
+          CLOUDINARY_CLOUD_NAME,
+        );
 
-      updateForm('pictures', [...(formData.pictures || []), cloudinaryUrl]);
+        if (!cloudinaryUrl) {
+          throw new Error('No URL returned from Cloudinary');
+        }
+
+        updateForm('pictures', [...(formData.pictures || []), cloudinaryUrl]);
+      } catch (uploadError) {
+        console.error('Upload error:', uploadError);
+        Alert.alert(
+          'Upload Failed',
+          'Failed to upload image. Please try again.',
+        );
+      }
     } catch (error) {
-      console.error('Error capturing image:', error);
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to capture image. Please try again.');
     } finally {
       setIsSelectingImage(false);
     }
