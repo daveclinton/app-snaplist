@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, TextInput, View } from 'react-native';
 
 import { type ListingFormData } from '@/api';
+import { categoriesJson } from '@/api/common/categories';
 import { type OptionType, Select } from '@/ui/select';
 
 import DescriptionInput from '../description-input';
@@ -10,7 +11,6 @@ interface BasicInfoFormProps {
   formData: ListingFormData;
   updateForm: (field: keyof ListingFormData, value: string | number) => void;
   errors: Record<string, string>;
-  categories: OptionType[];
   itemTypeLabel?: string;
 }
 
@@ -21,6 +21,13 @@ const CONDITIONS: OptionType[] = [
   { value: '4', label: 'Good' },
   { value: '5', label: 'Acceptable' },
 ] as const;
+
+const categories: OptionType[] = categoriesJson.categories.map(
+  (category, index) => ({
+    label: category.label,
+    value: `${category.value}_${index}`,
+  }),
+);
 
 const FormField = ({
   label,
@@ -57,7 +64,6 @@ export default function BasicInfoForm({
   formData,
   updateForm,
   errors,
-  categories,
   itemTypeLabel = 'Item',
 }: BasicInfoFormProps) {
   const handleUpdate =

@@ -19,7 +19,6 @@ import BasicInfoForm from '@/components/Steps/basic-info';
 import PricingForm from '@/components/Steps/pricing';
 import ReturnsForm from '@/components/Steps/returns';
 import ShippingForm from '@/components/Steps/shipping';
-import SpecificsForm from '@/components/Steps/specifics-info';
 import StepProgressIndicator from '@/components/Steps/step-progress';
 import { Button, Text } from '@/ui';
 
@@ -39,20 +38,6 @@ const STEPS = [
   },
   {
     id: 2,
-    title: 'Product Details',
-    component: SpecificsForm,
-    validate: (data: ListingFormData) => {
-      const errors: Record<string, string> = {};
-      if (!data.specifics.manufacturer)
-        errors.manufacturer = 'Manufacturer is required';
-      if (!data.specifics.productName)
-        errors.productName = 'Product name is required';
-      if (!data.specifics.category) errors.category = 'Category is required';
-      return errors;
-    },
-  },
-  {
-    id: 3,
     title: 'Price & Pictures',
     component: PricingForm,
     validate: (data: ListingFormData) => {
@@ -64,7 +49,7 @@ const STEPS = [
     },
   },
   {
-    id: 4,
+    id: 3,
     title: 'Shipping',
     component: ShippingForm,
     validate: (data: ListingFormData) => {
@@ -79,7 +64,7 @@ const STEPS = [
     },
   },
   {
-    id: 5,
+    id: 4,
     title: 'Returns Policy',
     component: ReturnsForm,
     validate: () => ({}),
@@ -210,7 +195,7 @@ export default function CreateListingScreen() {
         </View>
 
         <ScrollView className="flex-1">
-          <CurrentStepComponent categories={[]} {...stepProps} />
+          <CurrentStepComponent {...stepProps} />
         </ScrollView>
 
         {errors.submit && (
