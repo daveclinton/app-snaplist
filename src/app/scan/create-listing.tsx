@@ -30,9 +30,9 @@ const STEPS = [
     validate: (data: ListingFormData) => {
       const errors: Record<string, string> = {};
       if (!data.title) errors.title = 'Title is required';
-      // if (!data.description) errors.description = 'Description is required';
-      // if (!data.categoryId) errors.category = 'Category is required';
-      // if (!data.condition) errors.condition = 'Condition is required';
+      if (!data.description) errors.description = 'Description is required';
+      if (!data.categoryId) errors.category = 'Category is required';
+      if (!data.condition) errors.condition = 'Condition is required';
       return errors;
     },
   },
@@ -43,8 +43,8 @@ const STEPS = [
     validate: (data: ListingFormData) => {
       const errors: Record<string, string> = {};
       if (!data.price) errors.price = 'Price is required';
-      // if (!data.pictures?.length)
-      //   errors.pictures = 'At least one picture is required';
+      if (!data.images?.length)
+        errors.images = 'At least one picture is required';
       return errors;
     },
   },
@@ -77,13 +77,13 @@ const createListingPayload = (formData: ListingFormData) => ({
   categoryId: formData.categoryId,
   categoryName: formData.categoryName,
   price: parseFloat(formData.price),
-  pictures: formData.pictures,
+  images: formData.images,
   shipping: {
     service: formData.shipping.service,
     cost: parseFloat(formData.shipping.cost),
     dispatchDays: formData.shipping.dispatchDays,
-    stockQuantity: formData.stockQuantity,
-    discountPercentage: formData.discountPercentage,
+    stock_quantity: formData.stock_quantity,
+    discount_percentage: formData.discount_percentage,
     tags: formData.tags,
   },
   returns: {

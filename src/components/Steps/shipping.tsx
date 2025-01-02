@@ -58,9 +58,9 @@ const ShippingForm = ({
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Stock Quantity</Text>
         <TextInput
-          value={formData.stockQuantity?.toString() || ''}
+          value={formData.stock_quantity?.toString() || ''}
           onChangeText={(value) =>
-            updateForm('stockQuantity', parseInt(value || '0'))
+            updateForm('stock_quantity', parseInt(value || '0'))
           }
           placeholder="Enter stock quantity"
           keyboardType="number-pad"
@@ -73,9 +73,9 @@ const ShippingForm = ({
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Discount Percentage</Text>
         <TextInput
-          value={formData.discountPercentage?.toString() || ''}
+          value={formData.discount_percentage?.toString() || ''}
           onChangeText={(value) =>
-            updateForm('discountPercentage', parseFloat(value || '0'))
+            updateForm('discount_percentage', parseFloat(value || '0'))
           }
           placeholder="Enter discount percentage"
           keyboardType="decimal-pad"

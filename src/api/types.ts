@@ -35,16 +35,18 @@ type ReturnsData = {
 export type ListingFormData = {
   title: string;
   description: string;
-  categoryId: string; // eBay category ID
-  categoryName: string; // Category name for internal use
+  categories?: string[];
+  categoryId: string;
+  categoryName: string;
   condition: string;
   price: string;
-  pictures: string[];
+  images: string[];
   specifics: SpecificsData;
   shipping: ShippingData;
   returns: ReturnsData;
-  stockQuantity?: number;
-  discountPercentage?: number;
+  stock_quantity?: number;
+  discount_percentage?: number;
+  tags?: string[];
 };
 
 export type NestedKeys = keyof Pick<

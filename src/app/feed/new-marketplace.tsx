@@ -9,10 +9,10 @@ import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
+import { getUserSessionIdTwo } from '@/api/common/auth';
 import { useMarkeplaces } from '@/api/marketplaces/use-marketplaces';
 import { BottomCTA } from '@/components/bottom-cta';
 import { MarketplaceCard } from '@/components/marketplace-card';
-import { getUserSessionId } from '@/core/auth/utils';
 import { ScrollView, Text, View } from '@/ui';
 
 type MarketplaceData = {
@@ -54,7 +54,7 @@ export default function MarketplaceOAuthScreen() {
 
   useEffect(() => {
     const fetchSessionId = async () => {
-      const sessionId = await getUserSessionId();
+      const sessionId = await getUserSessionIdTwo();
       setUserSupabaseId(sessionId);
     };
     fetchSessionId();

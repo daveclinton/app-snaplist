@@ -1,74 +1,163 @@
-import { Image, type ImageSource } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+/* eslint-disable max-lines-per-function */
+import { Image } from 'expo-image';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { useColorScheme } from 'nativewind';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   ScrollView,
   Text,
   View,
 } from 'react-native';
 
-type ListingStatus = 'draft' | 'published' | 'delisted';
+import { getUserSessionIdTwo } from '@/api/common/auth';
+import { useAddProduct } from '@/api/products/use-add-product';
+
+type ListingStatus = 'draft' | 'pending' | 'listed';
 
 export default function ProductListingPage() {
   const [status, setStatus] = useState<ListingStatus>('draft');
   const [isLoading, setIsLoading] = useState(false);
+  const [userSupabaseId, setUserSupabaseId] = useState<string | null>(null);
 
   const { initialData } = useLocalSearchParams<{ initialData: string }>();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
-  const parsedData = initialData
-    ? JSON.parse(decodeURIComponent(initialData))
-    : {
-        categoryId: '550_9',
-        categoryName: 'Art',
-        description: 'Redmi 12, 16 inches, 255GB',
-        pictures: [
-          'https://res.cloudinary.com/dazawvf2g/image/upload/v1735813324/kwsnijjzeuvc7wcuejbn.jpg',
-        ],
-        price: 1000,
-        returns: {
-          accepted: true,
-          period: 10,
-          shippingPaidBy: 'Buyer',
-        },
-        shipping: {
-          cost: 2.5,
-          discountPercentage: 10,
-          dispatchDays: 3,
-          service: 'USPSMedia',
-          stockQuantity: 10,
+  const parsedData = React.useMemo(() => {
+    return initialData
+      ? JSON.parse(decodeURIComponent(initialData))
+      : {
+          title: 'Red I Note 15 pro',
+          description: 'Redmi 12, 16 inches, 255GB',
+          price: 1000,
+          categories: ['Phones', 'Smartphones'],
+          images: [
+            'https://res.cloudinary.com/dazawvf2g/image/upload/v1735813324/kwsnijjzeuvc7wcuejbn.jpg',
+          ],
+          stock_quantity: 10,
+          condition: 'new',
+          discount_percentage: 10,
           tags: ['Phones', 'Smart'],
-        },
-        title: 'Red I Note 15 pro',
+          shipping: {
+            cost: 2.5,
+            dispatchDays: 3,
+            service: 'USPSMedia',
+          },
+          returns: {
+            accepted: true,
+            period: 10,
+            shippingPaidBy: 'Buyer',
+          },
+        };
+  }, [initialData]);
+
+  // Log parsedData for debugging
+  useEffect(() => {
+    console.log('Parsed Data:', parsedData);
+  }, [parsedData]);
+
+  const { mutateAsync: addProduct } = useAddProduct();
+
+  // Fetch the user session ID
+  useEffect(() => {
+    const fetchSessionId = async () => {
+      const sessionId = await getUserSessionIdTwo();
+      setUserSupabaseId(sessionId);
+    };
+    fetchSessionId();
+  }, []);
+
+  const postProduct = async () => {
+    if (!userSupabaseId) {
+      Alert.alert('Error', 'User session ID is missing. Please try again.');
+      return;
+    }
+
+    try {
+      const productData = {
+        title: parsedData?.title,
+        description: parsedData?.description,
+        price: parsedData?.price,
+        categories: [parsedData?.categoryId, parsedData?.categoryName],
+        images: parsedData?.images,
+        stock_quantity: parsedData?.shipping?.stock_quantity,
+        condition: 'new',
+        discount_percentage: parsedData?.shipping?.discount_percentage,
+        tags: parsedData?.shipping.tags,
+        userId: userSupabaseId,
       };
+
+      console.log('Posting product:', productData);
+      await addProduct(productData);
+      setStatus('pending');
+    } catch (error) {
+      console.error('Error posting product:', error);
+      Alert.alert('Error', 'Failed to post product. Please try again.');
+      setStatus('draft');
+    }
+  };
+
+  const listProductOnMarketplaces = async () => {
+    try {
+      // List on eBay
+      const ebayResponse = await fetch('/listings/ebay', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(parsedData),
+      });
+
+      if (!ebayResponse.ok) {
+        throw new Error('Failed to list on eBay');
+      }
+
+      // List on Facebook Marketplace
+      const facebookResponse = await fetch('/listings/facebook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(parsedData),
+      });
+
+      if (!facebookResponse.ok) {
+        throw new Error('Failed to list on Facebook Marketplace');
+      }
+
+      setStatus('listed');
+    } catch (error) {
+      console.error('Error listing product:', error);
+      Alert.alert('Error', 'Failed to list product. Please try again.');
+      setStatus('pending');
+    }
+  };
 
   const handleStatusChange = async () => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    switch (status) {
-      case 'draft':
-        setStatus('published');
-        break;
-      case 'published':
-        setStatus('delisted');
-        break;
-      case 'delisted':
-        setStatus('published');
-        break;
+    try {
+      if (status === 'draft') {
+        await postProduct();
+      } else if (status === 'pending') {
+        await listProductOnMarketplaces();
+      }
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const getButtonText = () => {
     switch (status) {
       case 'draft':
         return 'Post';
-      case 'published':
-        return 'List';
-      case 'delisted':
-        return 'De-List';
+      case 'pending':
+        return 'List on Marketplaces';
+      case 'listed':
+        return 'Listed';
     }
   };
 
@@ -76,26 +165,35 @@ export default function ProductListingPage() {
     switch (status) {
       case 'draft':
         return 'bg-yellow-500';
-      case 'published':
+      case 'pending':
+        return 'bg-blue-500';
+      case 'listed':
         return 'bg-green-500';
-      case 'delisted':
-        return 'bg-red-500';
     }
   };
 
   return (
     <ScrollView className="flex-1 bg-gray-50">
+      <Stack.Screen
+        options={{
+          title: 'Post Product',
+          headerBackTitle: 'Create Listing',
+          headerStyle: {
+            backgroundColor: isDark ? '#030712' : '#f9fafb',
+          },
+          headerTintColor: isDark ? '#f3f4f6' : '#111827',
+        }}
+      />
       <View className="p-4">
-        {/* Status Badge and Action Button */}
         <View className="mb-4 flex-row items-center justify-between">
           <View className={`rounded-full px-3 py-1 ${getStatusColor()}`}>
             <Text className="font-medium capitalize text-white">{status}</Text>
           </View>
           <Pressable
             onPress={handleStatusChange}
-            disabled={isLoading}
+            disabled={isLoading || status === 'listed'}
             className={`rounded-lg px-6 py-3 ${
-              isLoading ? 'bg-gray-300' : 'bg-cyan-500'
+              isLoading || status === 'listed' ? 'bg-gray-300' : 'bg-cyan-500'
             }`}
           >
             {isLoading ? (
@@ -112,28 +210,16 @@ export default function ProductListingPage() {
           showsHorizontalScrollIndicator={false}
           className="mb-4"
         >
-          {parsedData?.pictures?.length > 0 ? (
-            parsedData.pictures.map(
-              (
-                url:
-                  | string
-                  | number
-                  | string[]
-                  | ImageSource
-                  | ImageSource[]
-                  | null
-                  | undefined,
-                index: React.Key | null | undefined,
-              ) => (
-                <Image
-                  key={index}
-                  source={url}
-                  className="mr-2 size-72 rounded-lg"
-                  contentFit="cover"
-                  transition={1000}
-                />
-              ),
-            )
+          {parsedData?.images?.length > 0 ? (
+            parsedData.images.map((url: string, index: number) => (
+              <Image
+                key={index}
+                source={url}
+                className="mr-2 size-72 rounded-lg"
+                contentFit="cover"
+                transition={1000}
+              />
+            ))
           ) : (
             <Text className="text-gray-500">No images available</Text>
           )}
@@ -158,15 +244,25 @@ export default function ProductListingPage() {
           <View className="space-y-2">
             <View className="flex-row justify-between">
               <Text className="text-gray-500">Category</Text>
-              <Text>{parsedData?.categoryName || '-'}</Text>
+              <Text>{parsedData?.categoryName}</Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-gray-500">Stock Quantity</Text>
-              <Text>{parsedData?.shipping?.stockQuantity || '-'}</Text>
+              <Text>{parsedData?.shipping?.stock_quantity || '0'}</Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="text-gray-500">Condition</Text>
+              <Text>{parsedData?.condition || 'New'}</Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="text-gray-500">Discount Percentage</Text>
+              <Text>{parsedData?.shipping?.discount_percentage || '0'}%</Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-gray-500">Tags</Text>
-              <Text>{parsedData?.shipping?.tags?.join(', ') || '-'}</Text>
+              <Text>
+                {parsedData?.shipping.tags?.join(', ') || 'No tags available'}
+              </Text>
             </View>
           </View>
         </View>
@@ -177,7 +273,9 @@ export default function ProductListingPage() {
           <View className="space-y-2">
             <View className="flex-row justify-between">
               <Text className="text-gray-500">Service</Text>
-              <Text>{parsedData?.shipping?.service || '-'}</Text>
+              <Text>
+                {parsedData?.shipping?.service || 'No service specified'}
+              </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-gray-500">Cost</Text>
@@ -185,11 +283,7 @@ export default function ProductListingPage() {
             </View>
             <View className="flex-row justify-between">
               <Text className="text-gray-500">Dispatch Time</Text>
-              <Text>{parsedData?.shipping?.dispatchDays || '-'} days</Text>
-            </View>
-            <View className="flex-row justify-between">
-              <Text className="text-gray-500">Discount Percentage</Text>
-              <Text>{parsedData?.shipping?.discountPercentage || '-'}%</Text>
+              <Text>{parsedData?.shipping?.dispatchDays || '0'} days</Text>
             </View>
           </View>
         </View>
@@ -204,12 +298,12 @@ export default function ProductListingPage() {
             </View>
             <View className="flex-row justify-between">
               <Text className="text-gray-500">Period</Text>
-              <Text>{parsedData?.returns?.period || '-'} days</Text>
+              <Text>{parsedData?.returns?.period || '0'} days</Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-gray-500">Shipping Paid By</Text>
               <Text className="capitalize">
-                {parsedData?.returns?.shippingPaidBy || '-'}
+                {parsedData?.returns?.shippingPaidBy || 'No information'}
               </Text>
             </View>
           </View>

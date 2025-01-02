@@ -83,7 +83,7 @@ export default function PricingForm({
   const [isSelectingImage, setIsSelectingImage] = useState(false);
 
   const handleImageSelect = async () => {
-    if (isSelectingImage) return; // Prevent multiple simultaneous uploads
+    if (isSelectingImage) return;
 
     setIsSelectingImage(true);
     try {
@@ -131,7 +131,7 @@ export default function PricingForm({
           throw new Error('No URL returned from Cloudinary');
         }
 
-        updateForm('pictures', [...(formData.pictures || []), cloudinaryUrl]);
+        updateForm('images', [...(formData.images || []), cloudinaryUrl]);
       } catch (uploadError) {
         console.error('Upload error:', uploadError);
         Alert.alert(
@@ -170,7 +170,7 @@ export default function PricingForm({
           throw new Error('No URL returned from Cloudinary');
         }
 
-        updateForm('pictures', [...(formData.pictures || []), cloudinaryUrl]);
+        updateForm('images', [...(formData.images || []), cloudinaryUrl]);
       } catch (uploadError) {
         console.error('Upload error:', uploadError);
         Alert.alert(
@@ -187,9 +187,9 @@ export default function PricingForm({
   };
 
   const removeImage = (index: number) => {
-    const newPictures = [...(formData.pictures || [])];
+    const newPictures = [...(formData.images || [])];
     newPictures.splice(index, 1);
-    updateForm('pictures', newPictures);
+    updateForm('images', newPictures);
   };
 
   const MAX_IMAGES = 12;
@@ -215,7 +215,7 @@ export default function PricingForm({
       >
         <View className="space-y-4">
           <View className="flex-row flex-wrap gap-4">
-            {formData.pictures?.map((url, index) => (
+            {formData.images?.map((url, index) => (
               <ImagePreview
                 key={`${url}-${index}`}
                 url={url}
@@ -223,7 +223,7 @@ export default function PricingForm({
               />
             ))}
 
-            {(formData.pictures?.length || 0) < MAX_IMAGES && (
+            {(formData.images?.length || 0) < MAX_IMAGES && (
               <View className="flex-row gap-2">
                 <Pressable
                   onPress={handleImageSelect}

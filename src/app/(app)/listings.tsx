@@ -1,16 +1,29 @@
 import * as React from 'react';
+import { FlatList } from 'react-native';
 
-import RecentListings from '@/components/recent-listings';
-import { userData } from '@/core/data';
-import { FocusAwareStatusBar, SafeAreaView, ScrollView } from '@/ui';
+import useProductListings from '@/api/common/use-product-listings';
+import ProductItem from '@/components/product-item';
+import ProductListPreview from '@/components/product-list-preview';
+import { FocusAwareStatusBar, SafeAreaView, View } from '@/ui';
 
 export default function Style() {
+  const { data, error, isLoading } = useProductListings();
+
+  if (isLoading || error || !data || data.length === 0) {
+    return <ProductListPreview />;
+  }
   return (
     <SafeAreaView>
       <FocusAwareStatusBar />
-      <ScrollView className="px-4">
-        <RecentListings scans={userData.recentScans} />
-      </ScrollView>
+      <View className="px-4">
+        <FlatList
+          data={data}
+          renderItem={({ item }) => <ProductItem item={item} />}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
     </SafeAreaView>
   );
 }

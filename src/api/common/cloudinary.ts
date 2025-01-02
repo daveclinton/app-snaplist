@@ -1,8 +1,5 @@
 import { Platform } from 'react-native';
 
-// const CLOUDINARY_UPLOAD_PRESET = 'listing';
-// const CLOUDINARY_CLOUD_NAME = 'dazawvf2g';
-
 export const uploadToCloudinary = async (
   imageUri: string,
   uploadPreset: string,

@@ -6,9 +6,8 @@ import { FeedHeader } from '@/components/feed-screen';
 import { CustomHeader } from '@/components/header';
 import { LinkedAccountsBar } from '@/components/link-accounts';
 import MediaPickerCard from '@/components/new-user-guide';
-import RecentListings from '@/components/recent-listings';
+import ProductListPreview from '@/components/product-list-preview';
 import { SUPPORTED_MARKETPLACES } from '@/core/constants';
-import { userData } from '@/core/data';
 import { useImagePicker } from '@/core/hooks/image-picker';
 import {
   useCameraPermission,
@@ -42,8 +41,8 @@ export default function Feed() {
             onCameraPress={openCamera}
             onGalleryPress={openGallery}
           />
-          <RecentListings scans={userData.recentScans} viewAll />
         </MotiScrollView>
+        <ProductListPreview />
       </View>
     </FeedHeader>
   );
