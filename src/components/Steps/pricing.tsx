@@ -9,6 +9,7 @@ import { Pressable } from 'react-native';
 import * as ImagePicker from 'react-native-image-crop-picker';
 
 import { type ListingFormData } from '@/api';
+import { uploadToCloudinary } from '@/api/common/cloudinary';
 import { Button, Image, Text, View } from '@/ui';
 import PriceInput from '@/ui/price-input';
 
@@ -103,11 +104,9 @@ export default function PricingForm({
           compressImageQuality: 0.8,
           mediaType: 'photo',
         });
+        const cloudinaryUrl = await uploadToCloudinary(croppedImage.path);
 
-        updateForm('pictures', [
-          ...(formData.pictures || []),
-          croppedImage.path,
-        ]);
+        updateForm('pictures', [...(formData.pictures || []), cloudinaryUrl]);
       }
     } catch (error) {
       console.error('Error selecting or cropping image:', error);
@@ -126,7 +125,9 @@ export default function PricingForm({
         compressImageQuality: 0.8,
       });
 
-      updateForm('pictures', [...(formData.pictures || []), image.path]);
+      const cloudinaryUrl = await uploadToCloudinary(image.path);
+
+      updateForm('pictures', [...(formData.pictures || []), cloudinaryUrl]);
     } catch (error) {
       console.error('Error capturing image:', error);
     } finally {
