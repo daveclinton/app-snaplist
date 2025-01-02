@@ -5,11 +5,12 @@ import {
 } from 'expo-image-picker';
 import { Camera, X } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Pressable, TextInput } from 'react-native';
+import { Pressable } from 'react-native';
 import * as ImagePicker from 'react-native-image-crop-picker';
 
 import { type ListingFormData } from '@/api';
 import { Button, Image, Text, View } from '@/ui';
+import PriceInput from '@/ui/price-input';
 
 interface PricingFormProps {
   formData: ListingFormData;
@@ -41,51 +42,6 @@ const FormField = ({
     )}
   </View>
 );
-
-const PriceInput = ({
-  value,
-  onChangeText,
-  error,
-}: {
-  value: string;
-  onChangeText: (value: string) => void;
-  error?: string;
-}) => {
-  const formatPrice = (input: string) => {
-    const cleaned = input.replace(/[^0-9.]/g, '');
-
-    const parts = cleaned.split('.');
-    if (parts.length > 2) return value;
-
-    if (parts[1]?.length > 2) {
-      return `${parts[0]}.${parts[1].slice(0, 2)}`;
-    }
-
-    return cleaned;
-  };
-
-  return (
-    <View className="relative">
-      <Text className="absolute left-4 top-3 text-gray-500 dark:text-gray-400">
-        $
-      </Text>
-      <TextInput
-        value={value}
-        onChangeText={(text) => onChangeText(formatPrice(text))}
-        placeholder="0.00"
-        keyboardType="decimal-pad"
-        className={`h-12 rounded-lg border bg-white pl-8 pr-4 text-base
-          ${
-            error
-              ? 'border-red-500 dark:border-red-400'
-              : 'border-gray-300 dark:border-gray-700'
-          }
-          dark:bg-gray-800 dark:text-gray-100`}
-        placeholderTextColor="#9CA3AF"
-      />
-    </View>
-  );
-};
 
 const ImagePreview = ({
   url,
