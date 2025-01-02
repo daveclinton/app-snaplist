@@ -78,11 +78,13 @@ const createListingPayload = (formData: ListingFormData) => ({
   categoryName: formData.categoryName,
   price: parseFloat(formData.price),
   pictures: formData.pictures,
-  specifics: formData.specifics,
   shipping: {
     service: formData.shipping.service,
     cost: parseFloat(formData.shipping.cost),
     dispatchDays: formData.shipping.dispatchDays,
+    stockQuantity: formData.stockQuantity,
+    discountPercentage: formData.discountPercentage,
+    tags: formData.tags,
   },
   returns: {
     accepted: formData.returns.accepted,
