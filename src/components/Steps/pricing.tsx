@@ -18,6 +18,9 @@ interface PricingFormProps {
   errors: Record<string, string>;
 }
 
+const blurhash =
+  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+
 const FormField = ({
   label,
   error,
@@ -54,7 +57,10 @@ const ImagePreview = ({
     <Image
       source={{ uri: url }}
       className="size-32 rounded-lg"
-      resizeMode="cover"
+      transition={1000}
+      contentFit="cover"
+      placeholder={{ blurhash }}
+      cachePolicy="disk"
     />
     <Pressable
       onPress={onRemove}
