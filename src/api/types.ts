@@ -43,6 +43,8 @@ export type ListingFormData = {
   specifics: SpecificsData;
   shipping: ShippingData;
   returns: ReturnsData;
+  stockQuantity?: number;
+  discountPercentage?: number;
 };
 
 export type NestedKeys = keyof Pick<

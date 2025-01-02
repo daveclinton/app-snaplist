@@ -137,6 +137,9 @@ importers:
       react-native-image-crop-picker:
         specifier: ^0.41.4
         version: 0.41.5(react-native@0.74.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.2.79)(react@18.2.0))
+      react-native-input-select:
+        specifier: ^2.1.1
+        version: 2.1.1(react-native@0.74.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
       react-native-keyboard-controller:
         specifier: ^1.13.2
         version: 1.14.5(react-native-reanimated@3.10.1(@babel/core@7.26.0)(react-native@0.74.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0))(react-native@0.74.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
@@ -6326,6 +6329,12 @@ packages:
     resolution: {integrity: sha512-7pnmp+VpVSqDkN1wTZfxjkhXTV9+3yhpc3ntlhy0HwRubMuHiF1Vhg4NC7dPvSkoYbOfjx1tgNsewKOKbxwrWg==}
     peerDependencies:
       react-native: '>=0.40.0'
+
+  react-native-input-select@2.1.1:
+    resolution: {integrity: sha512-UVCJS4WC+NRLrqyMa1uvOCJbinnyYlwNSCGr9LQ4QqYXANz+QMkBkyEAxxrf6Lggw33rRYDbb5XBpvvfiQrjnA==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
 
   react-native-iphone-screen-helper@2.1.2:
     resolution: {integrity: sha512-xczoNSb582bPW9na9f5ASlJ19vn/JBJ/jPzZ8f+u06F3tCa23dOIml7d4tHmbHdmVaWqf6tgRc95+tyavWg4Fw==}
@@ -15514,6 +15523,11 @@ snapshots:
 
   react-native-image-crop-picker@0.41.5(react-native@0.74.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.2.79)(react@18.2.0)):
     dependencies:
+      react-native: 0.74.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.2.79)(react@18.2.0)
+
+  react-native-input-select@2.1.1(react-native@0.74.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0):
+    dependencies:
+      react: 18.2.0
       react-native: 0.74.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.2.79)(react@18.2.0)
 
   react-native-iphone-screen-helper@2.1.2(react-native@0.74.5(@babel/core@7.26.0)(@babel/preset-env@7.26.0(@babel/core@7.26.0))(@types/react@18.2.79)(react@18.2.0)):

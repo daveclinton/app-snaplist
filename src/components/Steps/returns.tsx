@@ -1,47 +1,46 @@
 import React from 'react';
-import { TextInput } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 
 import { type ReturnsFormProps } from '@/api';
 import { Select, Switch, Text, View } from '@/ui';
 
 const ReturnsForm = ({ formData, updateNestedForm }: ReturnsFormProps) => {
   return (
-    <View className="space-y-4 p-4">
-      <View className="flex-row items-center justify-between">
-        <Text className="text-base font-medium dark:text-gray-200">
-          Accept Returns
-        </Text>
+    <View style={styles.container}>
+      {/* Accept Returns Toggle */}
+      <View style={styles.toggleContainer}>
+        <Text style={styles.label}>Accept Returns</Text>
         <Switch.Root
           checked={formData.returns.accepted}
           onChange={(value) => updateNestedForm('returns', 'accepted', value)}
           accessibilityLabel="switch"
-          className="pb-2"
         >
           <Switch.Icon checked={formData.returns.accepted} />
           <Switch.Label text="switch" />
         </Switch.Root>
       </View>
 
+      {/* Conditional Fields */}
       {formData.returns.accepted && (
         <>
-          <View>
-            <Text className="mb-2 text-base font-medium dark:text-gray-200">
-              Return Period (Days)
-            </Text>
+          {/* Return Period */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Return Period (Days)</Text>
             <TextInput
               value={formData.returns.period.toString()}
               onChangeText={(value) =>
-                updateNestedForm('returns', 'period', parseInt(value))
+                updateNestedForm('returns', 'period', parseInt(value || '0'))
               }
               placeholder="Enter return period"
               keyboardType="number-pad"
+              style={styles.input}
+              placeholderTextColor="#9CA3AF"
             />
           </View>
 
-          <View>
-            <Text className="mb-2 text-base font-medium dark:text-gray-200">
-              Shipping Paid By
-            </Text>
+          {/* Shipping Paid By */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>Shipping Paid By</Text>
             <Select
               value={formData.returns.shippingPaidBy}
               onSelect={(value) =>
@@ -59,5 +58,43 @@ const ReturnsForm = ({ formData, updateNestedForm }: ReturnsFormProps) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  fieldContainer: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  input: {
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    fontSize: 14,
+    color: '#1F2937',
+    backgroundColor: '#F9FAFB',
+  },
+});
 
 export default ReturnsForm;

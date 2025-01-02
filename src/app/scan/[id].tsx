@@ -21,7 +21,6 @@ interface ProductResult {
   source: string;
 }
 
-// Extracted animation constants
 const FADE_ANIMATION = {
   from: { opacity: 0, scale: 0.9 },
   animate: { opacity: 1, scale: 1 },
@@ -59,7 +58,6 @@ const ProductCard: React.FC<{
   index: number;
   imageSize: number;
 }> = ({ item, index, imageSize }) => {
-  // Function to safely encode product data
   const handleProductPress = () => {
     const encodedProduct = encodeURIComponent(
       JSON.stringify({
@@ -127,7 +125,6 @@ export default function ScanResults() {
   const windowWidth = Dimensions.get('window').width;
   const imageSize = (windowWidth - 48) / 2;
 
-  // Simulate upload and search progress with custom hook
   React.useEffect(() => {
     const uploadTimer = setTimeout(() => {
       setIsUploading(false);
@@ -145,7 +142,6 @@ export default function ScanResults() {
               'High-quality wireless headphones with noise cancellation.',
             source: 'Amazon.com',
           },
-          // ... other products
         ]);
       }, 2000);
 
