@@ -1,25 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 
-const DescriptionInput = ({
-  value,
-  onChangeText,
-  placeholder,
-  error,
-  itemTypeLabel = 'Item',
-  maxLength = 8000,
-}: {
-  value: string;
+interface DescriptionInputProps {
+  value?: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
   error?: string;
   itemTypeLabel?: string;
   maxLength?: number;
-}) => {
-  const [charCount, setCharCount] = useState(value.length);
+}
+
+const DescriptionInput = ({
+  value = '',
+  onChangeText,
+  placeholder = 'Describe the item',
+  error = '',
+  itemTypeLabel = 'Item',
+  maxLength = 8000,
+}: DescriptionInputProps) => {
+  const [charCount, setCharCount] = useState(value?.length || 0);
+
+  useEffect(() => {
+    setCharCount(value?.length || 0);
+  }, [value]);
 
   const handleChangeText = (text: string) => {
-    setCharCount(text.length);
+    setCharCount(text?.length || 0);
     onChangeText(text);
   };
 
@@ -57,6 +63,8 @@ const DescriptionInput = ({
           ${error ? 'border-red-500 dark:border-red-400' : ''}
         `}
         placeholderTextColor="#9CA3AF"
+        accessibilityLabel="Description input"
+        accessibilityRole="text"
       />
       {error && (
         <Text className="text-sm text-red-500 dark:text-red-400">{error}</Text>

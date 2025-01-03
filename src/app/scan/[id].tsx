@@ -4,12 +4,12 @@ import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import {
   ActivityIndicator,
-  Dimensions,
   FlatList,
   type ListRenderItem,
   Pressable,
 } from 'react-native';
 
+import { client } from '@/api/common/client';
 import { FocusAwareStatusBar, Image, Text, View } from '@/ui';
 
 interface ProductResult {
@@ -56,8 +56,7 @@ const LoadingState = ({ message }: { message: string }) => {
 const ProductCard: React.FC<{
   item: ProductResult;
   index: number;
-  imageSize: number;
-}> = ({ item, index, imageSize }) => {
+}> = ({ item, index }) => {
   const handleProductPress = () => {
     const encodedProduct = encodeURIComponent(
       JSON.stringify({
@@ -81,7 +80,7 @@ const ProductCard: React.FC<{
 
   return (
     <MotiView
-      className="mb-4"
+      className="mb-6"
       {...SLIDE_ANIMATION}
       transition={{
         ...SLIDE_ANIMATION.transition,
@@ -89,25 +88,30 @@ const ProductCard: React.FC<{
       }}
     >
       <Pressable
-        className="overflow-hidden rounded-lg bg-white p-4 shadow-md dark:bg-gray-900"
+        className="overflow-hidden rounded-lg bg-white p-4 shadow-sm dark:bg-gray-900"
         onPress={handleProductPress}
       >
         <Image
           source={{ uri: item.imageUrl }}
           style={{
-            width: imageSize - 16,
-            height: imageSize - 16,
+            width: '100%',
+            height: 200,
+            borderRadius: 8,
           }}
           contentFit="cover"
           transition={1000}
         />
-        <Text className="text-sm" numberOfLines={2}>
-          {item.source}
-        </Text>
-        <Text className="text-lg" numberOfLines={2}>
-          {item.title}
-        </Text>
-        <Text className="text-lg text-primary-900">{item.price}</Text>
+        <View className="mt-4">
+          <Text className="text-xs font-medium text-gray-500 dark:text-gray-400">
+            {item.source}
+          </Text>
+          <Text className="mt-1 text-xl font-semibold text-gray-900 dark:text-gray-100">
+            {item.title}
+          </Text>
+          <Text className="mt-1 text-2xl font-bold text-primary-900 dark:text-primary-500">
+            {item.price}
+          </Text>
+        </View>
       </Pressable>
     </MotiView>
   );
@@ -122,37 +126,59 @@ export default function ScanResults() {
 
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const windowWidth = Dimensions.get('window').width;
-  const imageSize = (windowWidth - 48) / 2;
+
+  const searchByImage = async (imageUri: string) => {
+    const formData = new FormData();
+    formData.append('image', {
+      uri: imageUri,
+      name: 'image.jpg',
+      type: 'image/jpeg',
+    } as any);
+    formData.append('userId', '563a3473-dbcb-48ba-8ed3-c6f34f11ae26');
+
+    try {
+      const response = await client.post(
+        '/ebay-categories/search-by-image',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      const items = response.data.itemSummaries.map((item: any) => ({
+        id: item.itemId,
+        title: item.title,
+        price: item.price.value,
+        imageUrl: item.image.imageUrl,
+        description: item.shortDescription,
+        source: 'eBay',
+      }));
+
+      setProducts(items);
+    } catch (error) {
+      console.error('Error searching by image:', error);
+    }
+  };
 
   React.useEffect(() => {
     const uploadTimer = setTimeout(() => {
       setIsUploading(false);
       setIsSearching(true);
 
-      const searchTimer = setTimeout(() => {
-        setIsSearching(false);
-        setProducts([
-          {
-            id: '1',
-            title: 'Wireless Headphones',
-            price: '$59.99',
-            imageUrl: 'https://picsum.photos/700',
-            description:
-              'High-quality wireless headphones with noise cancellation.',
-            source: 'Amazon.com',
-          },
-        ]);
-      }, 2000);
-
-      return () => clearTimeout(searchTimer);
+      if (decodedUri) {
+        searchByImage(decodedUri).then(() => {
+          setIsSearching(false);
+        });
+      }
     }, 2000);
 
     return () => clearTimeout(uploadTimer);
-  }, []);
+  }, [decodedUri]);
 
   const renderItem: ListRenderItem<ProductResult> = ({ item, index }) => (
-    <ProductCard item={item} index={index} imageSize={imageSize} />
+    <ProductCard item={item} index={index} />
   );
 
   const ListHeader = () => (
@@ -184,7 +210,7 @@ export default function ScanResults() {
       )}
 
       {!isUploading && !isSearching && products.length > 0 && (
-        <Text className="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-200">
+        <Text className="mb-4 text-2xl font-bold text-gray-900 dark:text-gray-100">
           Similar Products
         </Text>
       )}
@@ -217,10 +243,8 @@ export default function ScanResults() {
 
       <FlatList
         data={!isUploading && !isSearching ? products : []}
-        numColumns={2}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16 }}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
         ListHeaderComponent={ListHeader}
         ListEmptyComponent={EmptyComponent}
         renderItem={renderItem}
