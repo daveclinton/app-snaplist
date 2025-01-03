@@ -5,7 +5,7 @@ import {
   useLocalSearchParams,
 } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { AlertCircle } from 'lucide-react-native'; // For error icon
+import { AlertCircle } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -95,6 +95,9 @@ export default function MarketplaceOAuthScreen() {
     const fetchSessionId = async () => {
       const sessionId = await getUserSessionIdTwo();
       setUserSupabaseId(sessionId);
+      if (!sessionId) {
+        router.push('/login');
+      }
     };
     fetchSessionId();
   }, []);
@@ -137,7 +140,6 @@ export default function MarketplaceOAuthScreen() {
       },
     };
 
-    // Encode the initialData before passing it as a parameter
     const encodedInitialData = encodeURIComponent(JSON.stringify(initialData));
 
     router.push({

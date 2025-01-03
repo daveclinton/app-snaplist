@@ -12,8 +12,6 @@ const useProductListings = () => {
     enabled: !!userSupabaseId,
   });
 
-  console.log('userSupabaseId', userSupabaseId);
-
   useEffect(() => {
     const fetchSessionId = async () => {
       const sessionId = await getUserSessionIdTwo();
@@ -30,7 +28,7 @@ const useProductListings = () => {
     }, [userSupabaseId, refetch]),
   );
 
-  return { data, error, isLoading };
+  return { data, error, isLoading, userSupabaseId };
 };
 
 export default useProductListings;

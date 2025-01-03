@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 
 import { client } from '@/api/common/client';
+import { show as showToast } from '@/components/toast';
+import { supabase } from '@/core/supabase';
 import { FocusAwareStatusBar, Image, Text, View } from '@/ui';
 
 interface ProductResult {
@@ -128,13 +130,21 @@ export default function ScanResults() {
   const isDark = colorScheme === 'dark';
 
   const searchByImage = async (imageUri: string) => {
+    const userId = await getUserSessionIdTwo(); // Fetch the user ID dynamically
+
+    if (!userId) {
+      showToast('Please sign in to continue', 'error');
+      router.push('/login'); // Redirect to login if user is not authenticated
+      return;
+    }
+
     const formData = new FormData();
     formData.append('image', {
       uri: imageUri,
       name: 'image.jpg',
       type: 'image/jpeg',
     } as any);
-    formData.append('userId', '563a3473-dbcb-48ba-8ed3-c6f34f11ae26');
+    formData.append('userId', userId); // Use the fetched user ID
 
     try {
       const response = await client.post(
@@ -159,6 +169,7 @@ export default function ScanResults() {
       setProducts(items);
     } catch (error) {
       console.error('Error searching by image:', error);
+      showToast('An error occurred. Please try again.', 'error');
     }
   };
 
@@ -252,3 +263,20 @@ export default function ScanResults() {
     </View>
   );
 }
+
+// Helper function to fetch the user session ID
+const getUserSessionIdTwo = async (): Promise<string | null> => {
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error || !data.session) {
+      console.error('Error fetching session:', error);
+      showToast('Please sign in to continue', 'error');
+      return null;
+    }
+    return data.session.user.id;
+  } catch (error) {
+    console.error('Error in getUserSessionId:', error);
+    showToast('An error occurred. Please try again.', 'error');
+    return null;
+  }
+};

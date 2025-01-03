@@ -1,6 +1,6 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router'; // Import router for redirection
 import { AlertCircle, Box, ChevronRight } from 'lucide-react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import useProductListings from '@/api/common/use-product-listings';
 import { Image, Text, TouchableOpacity, View } from '@/ui';
@@ -37,7 +37,17 @@ const SkeletonLoader = () => {
 };
 
 const ProductListPreview = () => {
-  const { data, error, isLoading } = useProductListings();
+  const { data, error, isLoading, userSupabaseId } = useProductListings();
+
+  useEffect(() => {
+    if (!userSupabaseId) {
+      const redirectTimer = setTimeout(() => {
+        router.push('/login');
+      }, 20000);
+
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [userSupabaseId]);
 
   if (isLoading) {
     return <SkeletonLoader />;
