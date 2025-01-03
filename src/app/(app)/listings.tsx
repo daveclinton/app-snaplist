@@ -10,7 +10,12 @@ export default function Style() {
   const { data, error, isLoading } = useProductListings();
 
   if (isLoading || error || !data || data.length === 0) {
-    return <ProductListPreview />;
+    return (
+      <SafeAreaView>
+        <FocusAwareStatusBar />
+        <ProductListPreview />
+      </SafeAreaView>
+    );
   }
   return (
     <SafeAreaView>

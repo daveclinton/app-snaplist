@@ -5,6 +5,7 @@ import {
   useLocalSearchParams,
 } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
+import { AlertCircle } from 'lucide-react-native'; // For error icon
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -28,6 +29,44 @@ type MarketplaceData = {
     slug: string;
   };
   oauth_url: string;
+};
+
+// Skeleton Loader Component
+const SkeletonLoader = () => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  return (
+    <View className="flex-1 bg-white p-6 dark:bg-gray-900">
+      <Stack.Screen
+        options={{
+          title: 'Connect Marketplaces',
+          headerBackTitle: 'Home',
+          headerStyle: {
+            backgroundColor: isDark ? '#030712' : '#f9fafb',
+          },
+          headerTintColor: isDark ? '#f3f4f6' : '#111827',
+        }}
+      />
+      <View className="mb-6">
+        <View className="mb-4 h-8 w-48 rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <View className="mb-6 h-4 w-64 rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <View className="mb-6 h-12 w-full rounded-lg bg-gray-200 dark:bg-gray-700" />
+      </View>
+
+      <View className="flex-row flex-wrap justify-between">
+        {[...Array(4)].map((_, index) => (
+          <View
+            key={index}
+            className="mb-4 w-[48%] rounded-lg bg-gray-200 p-4 dark:bg-gray-700"
+          >
+            <View className="mb-4 h-24 w-full rounded-lg bg-gray-300 dark:bg-gray-600" />
+            <View className="mb-2 h-4 w-3/4 rounded-lg bg-gray-300 dark:bg-gray-600" />
+            <View className="h-4 w-1/2 rounded-lg bg-gray-300 dark:bg-gray-600" />
+          </View>
+        ))}
+      </View>
+    </View>
+  );
 };
 
 export default function MarketplaceOAuthScreen() {
@@ -120,17 +159,32 @@ export default function MarketplaceOAuthScreen() {
   };
 
   if (isPending) {
-    return (
-      <View className="flex-1 bg-white dark:bg-gray-900">
-        <Text>Loading marketplaces...</Text>
-      </View>
-    );
+    return <SkeletonLoader />;
   }
 
   if (isError) {
     return (
-      <View className="flex-1 bg-white dark:bg-gray-900">
-        <Text>Failed to load marketplaces</Text>
+      <View className="flex-1 items-center justify-center bg-white p-6 dark:bg-gray-900">
+        <Stack.Screen
+          options={{
+            title: 'Connect Marketplaces',
+            headerBackTitle: 'Home',
+            headerStyle: {
+              backgroundColor: isDark ? '#030712' : '#f9fafb',
+            },
+            headerTintColor: isDark ? '#f3f4f6' : '#111827',
+          }}
+        />
+        <View className="items-center rounded-lg bg-red-50 p-6 dark:bg-red-900/20">
+          <AlertCircle size={48} color="#EF4444" className="mb-4" />
+          <Text className="mb-2 text-center text-xl font-semibold text-red-600 dark:text-red-300">
+            Oops! Something went wrong.
+          </Text>
+          <Text className="text-center text-red-500 dark:text-red-400">
+            Our servers could be down, and we're working hard to fix this.
+            Please try again later.
+          </Text>
+        </View>
       </View>
     );
   }

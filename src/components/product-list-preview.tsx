@@ -1,19 +1,63 @@
-// components/ProductListPreview.tsx
 import { Link } from 'expo-router';
+import { AlertCircle } from 'lucide-react-native';
 import React from 'react';
 
 import useProductListings from '@/api/common/use-product-listings';
 import { Image, Text, TouchableOpacity, View } from '@/ui';
 
+const SkeletonLoader = () => {
+  return (
+    <View className="mb-6">
+      <View className="mb-4 flex-row items-center justify-between">
+        <View className="h-6 w-32 rounded-lg bg-gray-200 dark:bg-gray-700" />
+        <View className="h-4 w-20 rounded-lg bg-gray-200 dark:bg-gray-700" />
+      </View>
+
+      {[...Array(3)].map((_, index) => (
+        <View
+          key={index}
+          className="mb-3 rounded-xl bg-white p-4 shadow-sm dark:bg-gray-800"
+        >
+          <View className="flex-row">
+            <View className="mr-3 size-24 rounded-lg bg-gray-200 dark:bg-gray-700" />
+            <View className="flex-1">
+              <View className="mb-2 h-6 w-3/4 rounded-lg bg-gray-200 dark:bg-gray-700" />
+              <View className="mb-2 h-4 w-full rounded-lg bg-gray-200 dark:bg-gray-700" />
+              <View className="mb-2 h-4 w-2/3 rounded-lg bg-gray-200 dark:bg-gray-700" />
+              <View className="flex-row items-center justify-between">
+                <View className="h-4 w-16 rounded-lg bg-gray-200 dark:bg-gray-700" />
+                <View className="h-4 w-16 rounded-lg bg-gray-200 dark:bg-gray-700" />
+              </View>
+            </View>
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+};
+
 const ProductListPreview = () => {
   const { data, error, isLoading } = useProductListings();
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <SkeletonLoader />;
   }
 
   if (error) {
-    return <Text>Error: {error.message}</Text>;
+    return (
+      <View className="items-center justify-center p-6">
+        <View className="items-center rounded-lg bg-red-50 p-6 dark:bg-red-900/20">
+          <AlertCircle size={48} color="#EF4444" className="mb-4" />
+          <Text className="mb-2 text-center text-xl font-semibold text-red-600 dark:text-red-300">
+            Oops! Something went wrong.
+          </Text>
+          <Text className="text-center text-red-500 dark:text-red-400">
+            Our servers could be down, and we're working hard to fix this.
+            Please try again later.
+          </Text>
+        </View>
+      </View>
+    );
   }
 
   if (!data || data.length === 0) {
