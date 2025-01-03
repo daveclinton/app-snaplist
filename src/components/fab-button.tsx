@@ -1,6 +1,6 @@
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { CameraIcon, PlusCircle, Search } from 'lucide-react-native';
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Dimensions,
   Pressable,
@@ -48,6 +48,34 @@ const FAB = () => {
   const { openCamera } = useImagePicker(
     requestCameraAccessIfNeeded,
     requestPhotoAccessIfNeeded,
+  );
+
+  // Reset FAB to its original state
+  const resetFAB = useCallback(() => {
+    firstValue.value = withTiming(30);
+    secondValue.value = withTiming(30);
+    thirdValue.value = withTiming(30);
+    firstWidth.value = withTiming(60);
+    secondWidth.value = withTiming(60);
+    thirdWidth.value = withTiming(60);
+    opacity.value = withTiming(0);
+    isOpen.value = false;
+  }, [
+    firstValue,
+    secondValue,
+    thirdValue,
+    firstWidth,
+    secondWidth,
+    thirdWidth,
+    opacity,
+    isOpen,
+  ]);
+
+  // Use useFocusEffect to reset FAB on page change
+  useFocusEffect(
+    useCallback(() => {
+      resetFAB();
+    }, [resetFAB]),
   );
 
   const handlePress = () => {
