@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { AlertCircle } from 'lucide-react-native';
+import { AlertCircle, Box, ChevronRight } from 'lucide-react-native';
 import React from 'react';
 
 import useProductListings from '@/api/common/use-product-listings';
@@ -62,8 +62,37 @@ const ProductListPreview = () => {
 
   if (!data || data.length === 0) {
     return (
-      <View className="items-center justify-center p-4">
-        <Text>No listings found.</Text>
+      <View className="mb-6 items-center justify-center">
+        <View className="mb-4 w-full flex-row items-center justify-between">
+          <Text className="text-lg font-semibold text-gray-900 dark:text-white">
+            Recent Listings
+          </Text>
+
+          <View className="flex-row items-center">
+            <Link
+              href="/(app)/listings"
+              className="mr-1 text-sm text-cyan-600 dark:text-cyan-400"
+            >
+              View All
+            </Link>
+            <ChevronRight size={16} color="#0891b2" />
+          </View>
+        </View>
+
+        <View className="w-full items-center rounded-xl bg-white p-6 dark:bg-gray-800">
+          <View className="mb-4 size-24 items-center justify-center rounded-full bg-cyan-50 dark:bg-cyan-900">
+            <Box size={48} color="#0891b2" strokeWidth={1.5} />
+          </View>
+
+          <Text className="mb-2 text-center text-xl font-semibold text-gray-900 dark:text-white">
+            No Recent Listings
+          </Text>
+
+          <Text className="mb-4 text-center text-sm text-gray-500 dark:text-gray-400">
+            Looks like you haven't scanned any listings yet. Start exploring and
+            add your first listing!
+          </Text>
+        </View>
       </View>
     );
   }
